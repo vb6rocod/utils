@@ -19,6 +19,7 @@
  * $link --> video_link
  */
 $filelink = "https://powvideo.net/o4xa8jywtx07";
+if (strpos($filelink,"powvideo.") !== false || strpos($filelink,"povvideo.") !== false) {
 require_once("JavaScriptUnpacker.php");
 preg_match('/(powvideo|powvideo)\.(net|cc)\/(?:embed-|iframe-|preview-|)([a-z0-9]+)/',$filelink,$m);
 $id=$m[3];
@@ -61,6 +62,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
    $link=str_replace($a145,$x,$link);
 } else {
     $link = "";
+}
 }
 echo $link;
 ?>

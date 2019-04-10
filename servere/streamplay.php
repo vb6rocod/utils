@@ -19,6 +19,7 @@
  * $link --> video_link
  */
 $filelink = "https://streamplay.to/hpeg1vyu75yc";
+if (strpos($filelink,"streamplay.") !== false) {
 require_once("JavaScriptUnpacker.php");
 function abc($a52, $a10)
 {
@@ -115,6 +116,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     $link = str_replace($a145, $x, $link);
 } else {
     $link = "";
+}
 }
 echo $link;
 ?>
