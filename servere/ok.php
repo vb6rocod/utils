@@ -1,5 +1,5 @@
 <?php
- /* resolve gounlimited
+ /* resolve ok
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,30 +19,42 @@
  * $link --> video_link
  */
 
-$filelink="https://gounlimited.to/wnqeewv1o4q5/HEARTLAND_101r.mkv";
-if (strpos($filelink,"gounlimited.to") !== false) {
-  require_once("JavaScriptUnpacker.php");
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
+$filelink="http://ok.ru/videoembed/1298781768207";
+if (strpos($filelink,"ok.ru") !==false) {
+  //$user_agent = player user_agent !!!!!
+  if ($flash=="flash")
+  $user_agent     =   $_SERVER['HTTP_USER_AGENT'];
+  else {
+  $user_agent = 'Mozilla/5.0(Linux;Android 7.1.2;ro;RO;MXQ-4K Build/MXQ-4K) MXPlayer/1.8.10';
+  $user_agent = 'Mozilla/5.0(Linux;Android 10.1.2) MXPlayer';
+  }
+  $pattern = '/(?:\/\/|\.)(ok\.ru|odnoklassniki\.ru)\/(?:videoembed|video)\/(\d+)/';
+  preg_match($pattern,$filelink,$m);
+  $id=$m[2];
+  $l="http://www.ok.ru/dk";
+  $post="cmd=videoPlayerMetadata&mid=".$id;
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $filelink);
+  curl_setopt($ch, CURLOPT_URL, $l);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 5.1; rv:22.0) Gecko/20100101 Firefox/22.0');
+  curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt ($ch, CURLOPT_POST, 1);
+  curl_setopt ($ch, CURLOPT_POSTFIELDS, $post);
+  curl_setopt($ch, CURLOPT_REFERER,"http://www.ok.ru");
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  $h2 = curl_exec($ch);
+  $h = curl_exec($ch);
   curl_close($ch);
-  $jsu = new JavaScriptUnpacker();
-  $out = $jsu->Unpack($h2);
+  $z=json_decode($h,1);
 
-  if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
-    $link=$m[1];
-    $link=str_replace("https","http",$link);
-  } else
-    $link="";
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2.$out, $m))
-    $srt=$m[1];
+  $vids=$z["videos"];
+  $c=count($vids);
+  $link=$vids[$c-1]["url"];
+  if ($link) {
+    $t1=explode("?",$link);
+    $link=$t1[0]."/ok.mp4?".$t1[1];
+  }
 }
 echo $link;
 ?>

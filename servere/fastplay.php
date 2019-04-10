@@ -1,5 +1,5 @@
 <?php
- /* resolve gounlimited
+ /* resolve fastplay
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,10 +19,9 @@
  * $link --> video_link
  */
 
-$filelink="https://gounlimited.to/wnqeewv1o4q5/HEARTLAND_101r.mkv";
-if (strpos($filelink,"gounlimited.to") !== false) {
+$filelink="http://fastplay.to/embed-45nj56axbwg1.html";
+if (strpos($filelink,"fastplay.cc") !== false || strpos($filelink,"fastplay.to") !== false) {
   require_once("JavaScriptUnpacker.php");
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -35,14 +34,9 @@ if (strpos($filelink,"gounlimited.to") !== false) {
   curl_close($ch);
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h2);
-
-  if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
-    $link=$m[1];
-    $link=str_replace("https","http",$link);
-  } else
-    $link="";
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2.$out, $m))
-    $srt=$m[1];
+  $out .=$h2;
+  preg_match_all('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m);
+  $link=$m[1][count($m[1]) -1];
 }
 echo $link;
 ?>

@@ -1,5 +1,5 @@
 <?php
- /* resolve gounlimited
+ /* resolve vidcloud.icu
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,10 +19,9 @@
  * $link --> video_link
  */
 
-$filelink="https://gounlimited.to/wnqeewv1o4q5/HEARTLAND_101r.mkv";
-if (strpos($filelink,"gounlimited.to") !== false) {
-  require_once("JavaScriptUnpacker.php");
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
+$filelink="https://vidcloud.icu/load.php?id=MTE3MTI=";
+if (strpos($filelink,"vidcloud.icu") !== false) {
+  $filelink=str_replace("streaming.php","load.php",$filelink);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -33,16 +32,9 @@ if (strpos($filelink,"gounlimited.to") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h2 = curl_exec($ch);
   curl_close($ch);
-  $jsu = new JavaScriptUnpacker();
-  $out = $jsu->Unpack($h2);
-
-  if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
-    $link=$m[1];
-    $link=str_replace("https","http",$link);
-  } else
-    $link="";
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2.$out, $m))
-    $srt=$m[1];
+  $t1=explode("sources:[{file:",$h2);
+  $t2=explode("'",$t1[1]);
+  $link=$t2[1];
 }
 echo $link;
 ?>

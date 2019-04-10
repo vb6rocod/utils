@@ -1,5 +1,5 @@
 <?php
- /* resolve gounlimited
+ /* resolve vidup -- need pair IP https://vidup.io/pair
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,30 +19,31 @@
  * $link --> video_link
  */
 
-$filelink="https://gounlimited.to/wnqeewv1o4q5/HEARTLAND_101r.mkv";
-if (strpos($filelink,"gounlimited.to") !== false) {
-  require_once("JavaScriptUnpacker.php");
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $filelink);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 5.1; rv:22.0) Gecko/20100101 Firefox/22.0');
+$filelink="http://vidup.io/qdmyjx9v3mz9";
+if (strpos($filelink,"vidup.io") !== false) {
+ if (preg_match("/vidup\.io\/([0-9a-zA-Z]+)/",$filelink,$m)) {
+   $id=$m[1];
+ }
+  $l="https://vidup.io/api/pair/".$id;
+  $ua="Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0";
+  $ch = curl_init($l);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch,CURLOPT_REFERER,"https://vidup.io/");
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER  ,1);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  $h2 = curl_exec($ch);
-  curl_close($ch);
-  $jsu = new JavaScriptUnpacker();
-  $out = $jsu->Unpack($h2);
-
-  if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
-    $link=$m[1];
-    $link=str_replace("https","http",$link);
-  } else
+  $html = curl_exec($ch);
+  curl_close ($ch);
+  $r=json_decode($html,1);
+  if ($r["qualities"]) {
+     foreach ($r["qualities"] as $key=>$value) {
+     $link=$value;
+     }
+     if ($r["subtitles"]) $srt=$r["subtitles"][0];
+ } else
     $link="";
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2.$out, $m))
-    $srt=$m[1];
 }
 echo $link;
 ?>

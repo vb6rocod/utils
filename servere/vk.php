@@ -1,5 +1,5 @@
 <?php
- /* resolve gounlimited
+ /* resolve vk
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,30 +19,25 @@
  * $link --> video_link
  */
 
-$filelink="https://gounlimited.to/wnqeewv1o4q5/HEARTLAND_101r.mkv";
-if (strpos($filelink,"gounlimited.to") !== false) {
-  require_once("JavaScriptUnpacker.php");
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $filelink);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 5.1; rv:22.0) Gecko/20100101 Firefox/22.0');
+$filelink="http://vk.com/video_ext.php?oid=169048067&id=164398681&hash=8e32454b953dff04&hd=2";
+if ((strpos($filelink, 'vk.com') !== false) || (strpos($filelink, 'vkontakte.ru') !== false)) {
+  $ua="Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0";
+  $ch = curl_init($filelink);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch,CURLOPT_REFERER,"https://vk.com/");
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER  ,1);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_HEADER,1);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  $h2 = curl_exec($ch);
-  curl_close($ch);
-  $jsu = new JavaScriptUnpacker();
-  $out = $jsu->Unpack($h2);
-
-  if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
-    $link=$m[1];
-    $link=str_replace("https","http",$link);
-  } else
+  $html = curl_exec($ch);
+  curl_close ($ch);
+  $html=str_replace("\\","",$html);
+  if (preg_match_all("/url\d+\":\"([http|https][\.\d\w\-\.\/\\\:\=\?\&\#\%\_\,]*)\"/",$html,$m))
+    $link=$m[1][count($m)-1];
+  else
     $link="";
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2.$out, $m))
-    $srt=$m[1];
 }
 echo $link;
 ?>

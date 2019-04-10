@@ -1,5 +1,5 @@
 <?php
- /* resolve gounlimited
+ /* resolve estream
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,10 +19,8 @@
  * $link --> video_link
  */
 
-$filelink="https://gounlimited.to/wnqeewv1o4q5/HEARTLAND_101r.mkv";
-if (strpos($filelink,"gounlimited.to") !== false) {
-  require_once("JavaScriptUnpacker.php");
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
+$filelink="http://estream.to/embed-cx4ax095l8mp.html";
+if (strpos($filelink,"estream.to") !== false) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -33,16 +31,19 @@ if (strpos($filelink,"gounlimited.to") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h2 = curl_exec($ch);
   curl_close($ch);
-  $jsu = new JavaScriptUnpacker();
-  $out = $jsu->Unpack($h2);
 
-  if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
+  if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $h2, $m)) {
     $link=$m[1];
     $link=str_replace("https","http",$link);
   } else
     $link="";
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2.$out, $m))
-    $srt=$m[1];
+  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.vtt|\.srt))/', $h2, $m)) {
+  $srt=$m[1];
+  if (strpos($srt,"empty.srt") !== false) $srt="";
+   if ($srt) {
+   if (strpos($srt,"http") === false) $srt="https://estream.to/".$srt;
+  }
+ }
 }
 echo $link;
 ?>
