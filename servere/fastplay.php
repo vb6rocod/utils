@@ -35,8 +35,12 @@ if (strpos($filelink,"fastplay.cc") !== false || strpos($filelink,"fastplay.to")
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h2);
   $out .=$h2;
-  preg_match_all('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m);
+  if (preg_match_all('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
   $link=$m[1][count($m[1]) -1];
+  if (preg_match('/([http|https]?[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $out, $s))
+  $srt=$s[1]; if (strpos($srt,"http") === false) $srt="https://fastplay.to".$srt;
+  } else
+   $link="";
 }
 echo $link;
 ?>
