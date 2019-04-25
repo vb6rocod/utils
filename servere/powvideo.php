@@ -18,6 +18,37 @@
  * $filelink = "https://powvideo.net/o4xa8jywtx07";
  * $link --> video_link
  */
+function abc($a52, $a10)
+{
+    $a54 = array();
+    $a55 = 0x0;
+    $a56 = '';
+    $a57 = '';
+    $a58 = '';
+    $a52 = base64_decode($a52);
+    $a52 = mb_convert_encoding($a52, 'ISO-8859-1', 'UTF-8');
+    for ($a72 = 0x0; $a72 < 0x100; $a72++) {
+        $a54[$a72] = $a72;
+    }
+    for ($a72 = 0x0; $a72 < 0x100; $a72++) {
+        $a55       = ($a55 + $a54[$a72] + ord($a10[($a72 % strlen($a10))])) % 0x100;
+        $a56       = $a54[$a72];
+        $a54[$a72] = $a54[$a55];
+        $a54[$a55] = $a56;
+    }
+    $a72 = 0x0;
+    $a55 = 0x0;
+    for ($a100 = 0x0; $a100 < strlen($a52); $a100++) {
+        $a72       = ($a72 + 0x1) % 0x100;
+        $a55       = ($a55 + $a54[$a72]) % 0x100;
+        $a56       = $a54[$a72];
+        $a54[$a72] = $a54[$a55];
+        $a54[$a55] = $a56;
+        $xx        = $a54[($a54[$a72] + $a54[$a55]) % 0x100];
+        $a57 .= chr(ord($a52[$a100]) ^ $xx);
+    }
+    return $a57;
+}
 $filelink = "https://powvideo.net/o4xa8jywtx07";
 if (strpos($filelink,"powvideo.") !== false || strpos($filelink,"povvideo.") !== false) {
 require_once("JavaScriptUnpacker.php");
@@ -41,25 +72,50 @@ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 $h = curl_exec($ch);
 curl_close($ch);
-
+$t1=explode("function getCalcReferrer",$h);
+$h=$t1[1];
 $jsu = new JavaScriptUnpacker();
 $out = $jsu->Unpack($h);
 if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)) {
-   $link=$m[1];
-   $t1=explode("/",$link);
-   $a145=$t1[3];
-   $r=str_split(strrev($a145));
-   /*
-   array_splice($r, 3 , 1); // old
-   $r[7]=array_splice($r,4 , 1, $r[7])[0];
-   $r[2]=array_splice($r,1 , 1, $r[2])[0];
-   $r[0]=array_splice($r,9 , 1, $r[0])[0];
-   $r[5]=array_splice($r,6 , 1, $r[5])[0];
-   _0x16f256[_0x4c7c('0x8', 'SGjY')](0x3, 0x2); // new
-   */
-   array_splice($r, 3 , 2);
-   $x=implode($r);
-   $link=str_replace($a145,$x,$link);
+    $link=$m[1];
+    $t1=explode("/",$link);
+    $a145=$t1[3];
+    preg_match("/var\s+(_0x[a-z0-9]{4,})\s?\=\s?\[(.*)\]/", $h, $m);
+
+    $t1       = explode(";", $m[2]);
+    $php_code = "\$c0=array(" . str_replace("]", "", $t1[0]) . ");";
+    eval($php_code);
+
+    $pat = "/\(" . $m[1] . "\,(0x[a-z0-9]+)/";
+    preg_match($pat, $m[0], $n);
+    $x = hexdec($n[1]);
+
+    for ($k = 0; $k < $x; $k++) {
+        array_push($c0, array_shift($c0));
+    }
+
+    $t1=explode('Array[',$h);
+    $t2=explode('(',$t1[1]);
+    $t3=$t2[0];
+    $pat="/(".$t3.")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
+    preg_match_all($pat,$h,$p);
+    for ($z=0;$z<count($p[0]);$z++) {
+     $h=str_replace($p[0][$z],abc($c0[hexdec($p[2][$z])],$p[3][$z]),$h);
+    }
+    $t1=explode("[reverse]();",$h);
+    $t2=explode("return",$t1[1]);
+    $js=$t2[0];
+    $js=str_replace("+",";",$js);
+    preg_match("/(_0x[a-z0-9]{4,})/",$js,$y);
+
+    $js=str_replace($y[1],"r",$js);
+    $js=str_replace("'","",$js);
+
+    $js=str_replace("r[splice](","array_splice(\$r,",$js);
+    $r = str_split(strrev($a145));
+    eval($js);
+    $x    = implode($r);
+    $link = str_replace($a145, $x, $link);
 } else {
     $link = "";
 }
