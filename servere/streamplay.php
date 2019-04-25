@@ -72,7 +72,8 @@ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 $h = curl_exec($ch);
 curl_close($ch);
-
+//echo $h;
+//die();
 $jsu = new JavaScriptUnpacker();
 $out = $jsu->Unpack($h);
 if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)) {
@@ -97,17 +98,30 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     for ($k = 0; $k < $x; $k++) {
         array_push($c0, array_shift($c0));
     }
-    preg_match("/return\s+r\[(_[a-z0-9]+)/", $m[0], $p);
-    $t1 = explode("var r", $m[0]);
-    $t2 = explode("var", $t1[1]);
-    $t3 = explode('=', $t2[1]);
-    $t4 = explode(";", $t3[1]);
-    $t5 = str_replace($p[1], "abc", $t4[0]);
-    $a  = preg_replace("/\'(0x[0-9a-z]+)\'/", '\$c0[\\1]', $t5);
-    $a  = str_replace("+", ".", $a);
-    $b  = "\$d=" . $a . ";";
-    eval($b);
-    $d = str_replace("r.splice(", "array_splice(\$r,", $d);
+    $t1=explode('Array[',$h);     //Array[_0x52e0(_0x54d7('0x22','suqw'
+    $t2=explode('(',$t1[1]);
+    $t3=$t2[1];
+    $pat="/(".$t3.")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
+    preg_match_all($pat,$h,$p);
+    $js="";
+    for ($z=5;$z<10;$z++) {
+     $js .= base64_decode(abc($c0[hexdec($p[2][$z])],$p[3][$z]));
+    }
+
+    preg_match("/\(\"body\"\)\.data\(\"e0\"\,(\d+)\)/",$js,$e0);
+    $js=str_replace("$".$e0[0].";","",$js);
+    $js=str_replace('$("body").data("e0")',$e0[1],$js);
+
+    preg_match("/\(\"body\"\)\.data\(\"e1\"\,(\d+)\)/",$js,$e1);
+    $js=str_replace("$".$e1[0].";","",$js);
+    $js=str_replace('$("body").data("e1")',$e1[1],$js);
+    
+    preg_match("/\(\"body\"\)\.data\(\"e2\"\,(\d+)\)/",$js,$e2);
+    $js=str_replace("$".$e2[0].";","",$js);
+    $js=str_replace('$("body").data("e2")',$e2[1],$js);
+    
+    $js=str_replace('"',"",$js);
+    $d = str_replace("r.splice(", "array_splice(\$r,", $js);
     $d = str_replace("r[", "\$r[", $d);
 
     $r = str_split(strrev($a145));
