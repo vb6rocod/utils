@@ -102,12 +102,18 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     $t2=explode('(',$t1[1]);
     $t3=$t2[1];
     $pat="/(".$t3.")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
+    $pat="/(".$t3.")\(\'(0x[a-z0-9]+)\',\s*\'(.*?)\'\)/"; //better
     preg_match_all($pat,$h,$p);
     $js="";
-    for ($z=5;$z<10;$z++) {
-     $js .= base64_decode(abc($c0[hexdec($p[2][$z])],$p[3][$z]));
+    $code=array();
+    for ($z=0;$z<count($p[0]);$z++) {
+     $v= abc($c0[hexdec($p[2][$z])],$p[3][$z]);
+     if (preg_match("/^0x[a-f0-9]+/",$v,$index))
+       $code[hexdec($index[0])]=base64_decode($code[hexdec($index[0])]);
+     else
+       $code[$z]=$v;
     }
-
+    $js=implode($code);
     preg_match("/\(\"body\"\)\.data\(\"e0\"\,(\d+)\)/",$js,$e0);
     $js=str_replace("$".$e0[0].";","",$js);
     $js=str_replace('$("body").data("e0")',$e0[1],$js);
@@ -123,7 +129,8 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     $js=str_replace('"',"",$js);
     $d = str_replace("r.splice(", "array_splice(\$r,", $js);
     $d = str_replace("r[", "\$r[", $d);
-
+    preg_match("/(array\_splice(.*))\;/",$d,$f);
+    $d=$f[0];
     $r = str_split(strrev($a145));
     eval($d);
     $x    = implode($r);
