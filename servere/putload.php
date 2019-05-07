@@ -44,7 +44,8 @@ if (strpos($filelink,"putload.") !== false) {
   curl_close($ch);
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h3);
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m))
+  $out .=$h3;
+  if (preg_match('/([http|https][\.\d\w\-\,\.\/\\\:\?\&\#\%\_\,]*(\.(mp4|m3u8)))/', $out, $m))
    $link=$m[1];
   else
    $link="";

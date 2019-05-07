@@ -98,43 +98,96 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     for ($k = 0; $k < $x; $k++) {
         array_push($c0, array_shift($c0));
     }
-    $t1=explode('Array[',$h);     //Array[_0x52e0(_0x54d7('0x22','suqw'
-    $t2=explode('(',$t1[1]);
-    $t3=$t2[1];
-    $pat="/(".$t3.")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
-    $pat="/(".$t3.")\(\'(0x[a-z0-9]+)\',\s*\'(.*?)\'\)/"; //better
-    preg_match_all($pat,$h,$p);
-    $js="";
-    $code=array();
-    for ($z=0;$z<count($p[0]);$z++) {
-     $v= abc($c0[hexdec($p[2][$z])],$p[3][$z]);
-     if (preg_match("/^0x[a-f0-9]+/",$v,$index))
-       $code[hexdec($index[0])]=base64_decode($code[hexdec($index[0])]);
-     else
-       $code[$z]=$v;
-    }
-    $js=implode($code);
-    preg_match("/\(\"body\"\)\.data\(\"e0\"\,(\d+)\)/",$js,$e0);
-    $js=str_replace("$".$e0[0].";","",$js);
-    $js=str_replace('$("body").data("e0")',$e0[1],$js);
+        $t1  = explode('Array[', $h); //Array[_0x52e0(_0x54d7('0x22','suqw'
+        $t2  = explode('(', $t1[1]);
+        $t3  = $t2[1];
+        $pat = "/(" . $t3 . ")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
+        $pat = "/(" . $t3 . ")\(\'(0x[a-z0-9]+)\',\s*\'(.*?)\'\)/"; //better
+        preg_match_all($pat, $h, $p);
+        $js   = "";
+        //print_r ($p);
+        $code = array();
+        for ($z = 0; $z < count($p[0]); $z++) {
+            $v = abc($c0[hexdec($p[2][$z])], $p[3][$z]);
+            if (preg_match("/^0x[a-f0-9]+/", $v, $index)) {
+                $code[hexdec($index[0])] = base64_decode($code[hexdec($index[0])]);
+                //$code[$z]=$v;
+            } else
+                $code[$z] = $v;
+        }
+        //print_r ($code);
+        ////////////////////////////////////
+        $t1  = explode('Array[', $h);
+        $t2  = explode('(', $t1[1]);
+        $t3  = $t2[0];
+        $pat = "/(" . $t3 . ")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
+        //preg_match_all($pat,$h,$p);
+        for ($z = 0; $z < count($p[0]); $z++) {
+            $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
+        }
+        /* arrange code*/
+        /////////////////////////////////////////
+        preg_match_all("/_0x[a-f0-9]{6}/s", $h, $m);
+        for ($k = 0; $k < count($m[0]); $k++) {
+            $h = str_replace($m[0][$k], "a" . $k, $h);
+        }
+        preg_match_all("/_0x[a-f0-9]{5}/s", $h, $m);
+        for ($k = 0; $k < count($m[0]); $k++) {
+            $h = str_replace($m[0][$k], "b" . $k, $h);
+        }
+        preg_match_all("/_0x[a-f0-9]{4}/s", $h, $m);
+        for ($k = 0; $k < count($m[0]); $k++) {
+            $h = str_replace($m[0][$k], "c" . $k, $h);
+        }
+        preg_match_all("/_1x[a-f0-9]{6}/s", $h, $m);
 
-    preg_match("/\(\"body\"\)\.data\(\"e1\"\,(\d+)\)/",$js,$e1);
-    $js=str_replace("$".$e1[0].";","",$js);
-    $js=str_replace('$("body").data("e1")',$e1[1],$js);
-    
-    preg_match("/\(\"body\"\)\.data\(\"e2\"\,(\d+)\)/",$js,$e2);
-    $js=str_replace("$".$e2[0].";","",$js);
-    $js=str_replace('$("body").data("e2")',$e2[1],$js);
-    
-    $js=str_replace('"',"",$js);
-    $d = str_replace("r.splice(", "array_splice(\$r,", $js);
-    $d = str_replace("r[", "\$r[", $d);
-    preg_match("/(array\_splice(.*))\;/",$d,$f);
-    $d=$f[0];
-    $r = str_split(strrev($a145));
-    eval($d);
-    $x    = implode($r);
-    $link = str_replace($a145, $x, $link);
+        for ($k = 0; $k < count($m[0]); $k++) {
+            $h = str_replace($m[0][$k], "d" . $k, $h);
+        }
+        //echo $h;
+        /////////////////////////////////////////////////
+        /* find second array */
+        preg_match_all("/var (c\d+)\=\[(.*?)\]/ms", $h, $r);
+        //print_r ($r);
+        $v   = $r[1][1];
+        $a   = $r[2][1];
+        //(c13,0x1c6))
+        $pat = "/\(" . $v . "\,(0x[a-z0-9]+)\)\)/ms";
+        preg_match($pat, $h, $e);
+        //print_r ($e);
+        $php_code = "\$e0=array('" . str_replace(",", "','", $a) . "');";
+        eval($php_code);
+        //print_r ($e0);
+        $x = hexdec($v);
+
+        for ($k = 0; $k < $x; $k++) {
+            array_push($e0, array_shift($e0));
+        }
+        //print_r ($e0);
+
+        $out = "";
+        for ($k = 0; $k < count($e0); $k++) {
+            $out .= base64_decode($e0[$k]);
+        }
+        $t1  = explode("reverse", $out);
+        $t2  = explode("join", $t1[1]);
+        $out = $t2[0];
+
+        preg_match_all("/\(\"body\"\)\.data\(\"(\w\d)\"\,(\d+)\)/", $out, $u);
+        //print_r ($u);
+        for ($k = 0; $k < count($u[0]); $k++) {
+            $out = str_replace("$" . $u[0][$k] . ";", "", $out);
+            $out = str_replace('$("body").data("' . $u[1][$k] . '")', $u[2][$k], $out);
+        }
+        $out = str_replace('"', "", $out);
+        $d   = str_replace("r.splice(", "array_splice(\$r,", $out);
+        $d   = str_replace("r[", "\$r[", $d);
+        preg_match("/(array\_splice(.*))\;/", $d, $f);
+        $d = $f[0];
+        $r = str_split(strrev($a145));
+        eval($d);
+        $x    = implode($r);
+        $link = str_replace($a145, $x, $link);
 } else {
     $link = "";
 }

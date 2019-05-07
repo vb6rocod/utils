@@ -25,7 +25,8 @@ if (strpos($filelink,"flix555.com") !== false) {
   $pattern = '@(?:\/\/|\.)(flix555\.com)\/(?:embed-)?([a-zA-Z0-9]+)@';
   preg_match($pattern,$filelink,$r);
   $l="https://flix555.com/embed-".$r[2].".html";
-
+  //https://flix555.com/embed-f79r27784cgu.html
+  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $l);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
