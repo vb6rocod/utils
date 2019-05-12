@@ -169,19 +169,22 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
         for ($k = 0; $k < count($e0); $k++) {
             $out .= base64_decode($e0[$k]);
         }
+        //echo $out;
         $t1  = explode("reverse", $out);
         $t2  = explode("join", $t1[1]);
         $out = $t2[0];
-
-        preg_match_all("/\(\"body\"\)\.data\(\"(\w\d)\"\,(\d+)\)/", $out, $u);
+        //echo $out;
+        preg_match_all("/\(\"body\"\)\.data\(\"(\w\s?\d)\"\,(\d+)\)/", $out, $u);
         //print_r ($u);
         for ($k = 0; $k < count($u[0]); $k++) {
             $out = str_replace("$" . $u[0][$k] . ";", "", $out);
             $out = str_replace('$("body").data("' . $u[1][$k] . '")', $u[2][$k], $out);
         }
         $out = str_replace('"', "", $out);
+        //echo $out;
         $d   = str_replace("r.splice(", "array_splice(\$r,", $out);
         $d   = str_replace("r[", "\$r[", $d);
+        //ecgo $d;
         preg_match("/(array\_splice(.*))\;/", $d, $f);
         $d = $f[0];
         $r = str_split(strrev($a145));

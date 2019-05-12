@@ -175,7 +175,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
         $t2  = explode("join", $t1[1]);
         $out = $t2[0];
 
-        preg_match_all("/\(\"body\"\)\.data\(\"(\w\d)\"\,(\d+)\)/", $out, $u);
+        preg_match_all("/\(\"body\"\)\.data\(\"(\w\s?\d)\"\,(\d+)\)/", $out, $u);
         //print_r ($u);
         for ($k = 0; $k < count($u[0]); $k++) {
             $out = str_replace("$" . $u[0][$k] . ";", "", $out);
