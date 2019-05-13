@@ -72,8 +72,7 @@ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 $h = curl_exec($ch);
 curl_close($ch);
-//echo $h;
-//die();
+
 $jsu = new JavaScriptUnpacker();
 $out = $jsu->Unpack($h);
 if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)) {
@@ -83,10 +82,9 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     if (preg_match('/([\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.(srt|vtt)))/', $out, $xx)) {
         //src:"/srt/00686/ic19hoyeob1d_Italian.vtt"
         $srt = $xx[1];
-    }
     if (strpos("http", $srt) === false && $srt)
-        $srt = "http://streamplay.to" . $srt;
-
+        $srt = "https://streamplay.to" . $srt;
+    }
     preg_match("/var\s+(_0x[a-z0-9]{4,})\s?\=\s?\[(.*)\]/", $h, $m);
     $t1       = explode(";", $m[2]);
     $php_code = "\$c0=array(" . str_replace("]", "", $t1[0]) . ");";
@@ -98,30 +96,18 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     for ($k = 0; $k < $x; $k++) {
         array_push($c0, array_shift($c0));
     }
-        $t1  = explode('Array[', $h); //Array[_0x52e0(_0x54d7('0x22','suqw'
-        $t2  = explode('(', $t1[1]);
-        $t3  = $t2[1];
-        $pat = "/(" . $t3 . ")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
-        $pat = "/(" . $t3 . ")\(\'(0x[a-z0-9]+)\',\s*\'(.*?)\'\)/"; //better
-        preg_match_all($pat, $h, $p);
-        $js   = "";
-        //print_r ($p);
-        $code = array();
-        for ($z = 0; $z < count($p[0]); $z++) {
-            $v = abc($c0[hexdec($p[2][$z])], $p[3][$z]);
-            if (preg_match("/^0x[a-f0-9]+/", $v, $index)) {
-                $code[hexdec($index[0])] = base64_decode($code[hexdec($index[0])]);
-                //$code[$z]=$v;
-            } else
-                $code[$z] = $v;
+
+        if (preg_match("/Array\[_0x[a-z0-9]+\((_0x[a-z0-9]+)/",$h,$func)) {
+          /* Array[_0x3504(_0xfcc8('0x22','uSSR'))][_0x3504(_0xfcc8 */
+          $t3=$func[1];
+          $secArr=true;
+        } else if (preg_match("/Array\[(_0x[a-z0-9]+)\(\'0x/",$h,$func)) {
+          /*Array[_0x5f0b('0x0','9YsV')]*/
+          $t3=$func[1];
+          $secArr=false;
         }
-        //print_r ($code);
-        ////////////////////////////////////
-        $t1  = explode('Array[', $h);
-        $t2  = explode('(', $t1[1]);
-        $t3  = $t2[0];
-        $pat = "/(" . $t3 . ")\(\'(0x[a-z0-9]+)\',\s*\'([\w\#\[\]\(\)\%\&\!\^\@\$\{\}]+)\'\)/";
-        //preg_match_all($pat,$h,$p);
+        $pat = "/(" . $t3 . ")\(\'(0x[a-z0-9]+)\',\s*\'(.*?)\'\)/"; //better
+        preg_match_all($pat,$h,$p);
         for ($z = 0; $z < count($p[0]); $z++) {
             $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
         }
@@ -146,6 +132,8 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
         }
         //echo $h;
         /////////////////////////////////////////////////
+
+        if ($secArr) {
         /* find second array */
         preg_match_all("/var (c\d+)\=\[(.*?)\]/ms", $h, $r);
         //print_r ($r);
@@ -169,16 +157,23 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
         for ($k = 0; $k < count($e0); $k++) {
             $out .= base64_decode($e0[$k]);
         }
+        } else {
+          $out="";
+          for ($z = 0; $z < count($p[0]); $z++) {
+            $out .= abc($c0[hexdec($p[2][$z])], $p[3][$z]);
+          }
+        }
         //echo $out;
         $t1  = explode("reverse", $out);
         $t2  = explode("join", $t1[1]);
         $out = $t2[0];
         //echo $out;
-        preg_match_all("/\(\"body\"\)\.data\(\"(\w\s?\d)\"\,(\d+)\)/", $out, $u);
+        if (preg_match_all("/\(\"body\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
         //print_r ($u);
         for ($k = 0; $k < count($u[0]); $k++) {
             $out = str_replace("$" . $u[0][$k] . ";", "", $out);
             $out = str_replace('$("body").data("' . $u[1][$k] . '")', $u[2][$k], $out);
+        }
         }
         $out = str_replace('"', "", $out);
         //echo $out;
