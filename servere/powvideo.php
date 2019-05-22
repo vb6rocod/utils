@@ -27,8 +27,13 @@ function abc($a52, $a10)
     $a58 = '';
     $a52 = base64_decode($a52);
     $a52 = mb_convert_encoding($a52, 'ISO-8859-1', 'UTF-8');
+    /*
     for ($a72 = 0x0; $a72 < 0x100; $a72++) {
         $a54[$a72] = $a72;
+    }
+    */
+    for ($a72 = 0x0; $a72 < 0x100; $a72++) {     //new
+        $a54[$a72] = (0x3 + $a72) % 0x100;
     }
     for ($a72 = 0x0; $a72 < 0x100; $a72++) {
         $a55       = ($a55 + $a54[$a72] + ord($a10[($a72 % strlen($a10))])) % 0x100;
@@ -50,6 +55,7 @@ function abc($a52, $a10)
     return $a57;
 }
 $filelink = "https://powvideo.net/o4xa8jywtx07";
+$filelink="https://powvideo.net/0ouzz4i4yvvs";
 if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !== false) {
     require_once("JavaScriptUnpacker.php");
     preg_match('/(powvideo|powvideo)\.(net|cc)\/(?:embed-|iframe-|preview-|)([a-z0-9]+)/', $filelink, $m);
@@ -102,6 +108,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     if (preg_match("/(var\s+(_0x[a-z0-9]+))\=\[(\'[a-zA-Z0-9\=\+\/]+\'\,?)+\]/ms", $h, $m)) {
         $php_code = str_replace($m[1], "\$c0", $m[0]) . ";";
         eval($php_code);
+        //print_r ($c0);
         /* rotate with 0xd0 search (_0x1107,0xd0)) */
         $pat = "/\(" . $m[2] . "\,(0x[a-z0-9]+)/";
         if (preg_match($pat, $h, $n)) {
@@ -114,6 +121,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
         /* check if exist second array and get replacement for abc function and slice*/
         /* search Array[_0x3504(_0xfcc8('0x22','uSSR'))] */
         if (preg_match("/Array\[(_0x[a-z0-9]+)\((_0x[a-z0-9]+)\(/", $h, $f)) {
+            //print_r ($f);
             $func  = $f[2];
             $func1 = $f[1];
             /* find and replace _0xfcc8('0x24','EOVX') with abc(a,b) */
@@ -123,6 +131,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
                     $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
                 }
             }
+            //echo $h;
             /* search for second array var _0x13e4=[xcxcxc,xcxc,xcxcx ...] */
             if (preg_match("/(var\s+(_0x[a-z0-9]+))\=\[([a-zA-Z0-9\=\+\/]+\,?)+\]/ms", $h, $m)) {
                 $php_code = str_replace(",", "','", $m[0]);
@@ -131,6 +140,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
                 $php_code = str_replace($m[1], "\$c1", $php_code) . ";";
                 /* get second array $c1 and rotate */
                 eval($php_code);
+                //print_r ($c1);
                 $pat = "/\(" . $m[2] . "\,(0x[a-z0-9]+)/ms";
                 if (preg_match($pat, $h, $n)) {
                     $x = hexdec($n[1]);
@@ -147,11 +157,18 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
                 */
                 /* search and replace _0x3504(0x6) etc with second array $c1 */
                 $pat = "/" . $func1 . "\((0x[0-9a-f]+)\)/ms";
-                preg_match_all($pat, $h, $q);
-                for ($k = 0; $k < count($q[1]); $k++) {
+                $pat1   = "/(" . $func1 . ")\((0x[a-z0-9]+),\s?(.*?)\)/"; //better
+                if (preg_match_all($pat, $h, $q)) {
+                   for ($k = 0; $k < count($q[1]); $k++) {
                     $h = str_replace($q[0][$k], base64_decode($c1[hexdec($q[1][$k])]), $h);
+                   }
+                } else if (preg_match_all($pat1, $h, $p)) {
+                   for ($z = 0; $z < count($p[0]); $z++) {
+                    $h = str_replace($p[0][$z], abc($c1[hexdec($p[2][$z])], $p[3][$z]), $h);
+                   }
                 }
             }
+            //echo $h;
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $let = $e[2];
@@ -254,6 +271,10 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
         }
     }
     /* $out */
+
+    /* search (Math.round(7-2)) */
+    $out=str_replace("(Math.round(","",$out);
+    $out=str_replace("))","",$out);
     if (preg_match_all("/\(\"body\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
         for ($k = 0; $k < count($u[0]); $k++) {
             $out = str_replace("$" . $u[0][$k] . ";", "", $out);
@@ -261,6 +282,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
         }
     }
     $out = str_replace('"', "", $out);
+    //echo $out;
     /* now is like array_splice($r, 3, 1);$r[388&15]=array_splice($r,388>>(3+3), 1, $r[388&15])[0]; etc */
     $d   = str_replace("r.splice(", "array_splice(\$r,", $out);
     $d   = str_replace("r[", "\$r[", $d);

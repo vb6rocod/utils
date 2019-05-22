@@ -60,7 +60,7 @@ function abc($a52, $a10)
 }
 
 preg_match('/(?:\/\/|\.)(streamplay\.(?:to|club|top|me))\/(?:embed-|player-)?([0-9a-zA-Z]+)/', $filelink, $m);
-$filelink = "https://streamplay.to/player-" . $m[2] . "-920x360.html";
+$filelink = "https://streamplay.me/player-" . $m[2] . "-920x360.html";
 $ua       = $_SERVER["HTTP_USER_AGENT"];
 $head     = array(
     'Cookie: lang=1; ref_yrp=http%3A%2F%2Fcecileplanche-psychologue-lyon.com%2Fshow%2Fthe-good-cop%2Fseason-1%2Fepisode-2; ref_kun=1'
@@ -78,6 +78,7 @@ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 $h = curl_exec($ch);
 curl_close($ch);
+//echo $h;
 if (strpos($h, "function getCalcReferrer") !== false) {
     $t1 = explode("function getCalcReferrer", $h);
     $h  = $t1[1];
@@ -127,6 +128,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
                     $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
                 }
             }
+            //echo $h;
             /* search for second array var _0x13e4=[xcxcxc,xcxc,xcxcx ...] */
             if (preg_match("/(var\s+(_0x[a-z0-9]+))\=\[([a-zA-Z0-9\=\+\/]+\,?)+\]/ms", $h, $m)) {
                 $php_code = str_replace(",", "','", $m[0]);
@@ -152,9 +154,15 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
                 */
                 /* search and replace _0x3504(0x6) etc with second array $c1 */
                 $pat = "/" . $func1 . "\((0x[0-9a-f]+)\)/ms";
-                preg_match_all($pat, $h, $q);
-                for ($k = 0; $k < count($q[1]); $k++) {
+                $pat1   = "/(" . $func1 . ")\((0x[a-z0-9]+),\s?(.*?)\)/"; //better
+                if (preg_match_all($pat, $h, $q)) {
+                   for ($k = 0; $k < count($q[1]); $k++) {
                     $h = str_replace($q[0][$k], base64_decode($c1[hexdec($q[1][$k])]), $h);
+                   }
+                } else if (preg_match_all($pat1, $h, $p)) {
+                   for ($z = 0; $z < count($p[0]); $z++) {
+                    $h = str_replace($p[0][$z], abc($c1[hexdec($p[2][$z])], $p[3][$z]), $h);
+                   }
                 }
             }
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
@@ -261,6 +269,8 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     }
     /* $out */
     //echo $out;
+    $out=str_replace("(Math.round(","",$out);
+    $out=str_replace("))","",$out);
     if (preg_match_all("/\(\"body\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
         for ($k = 0; $k < count($u[0]); $k++) {
             $out = str_replace("$" . $u[0][$k] . ";", "", $out);
