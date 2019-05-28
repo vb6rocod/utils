@@ -125,45 +125,43 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
             $pat   = "/(" . $func . ")\(\'(0x[a-z0-9]+)\',\s?\'(.*?)\'\)/"; //better
             if (preg_match_all($pat, $h, $p)) {
                 for ($z = 0; $z < count($p[0]); $z++) {
-                    $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
+                    $h = str_replace($p[0][$z], "'".abc($c0[hexdec($p[2][$z])], $p[3][$z])."'", $h);
                 }
             }
             //echo $h;
             /* search for second array var _0x13e4=[xcxcxc,xcxc,xcxcx ...] */
-            if (preg_match("/(var\s+(_0x[a-z0-9]+))\=\[([a-zA-Z0-9\=\+\/]+\,?)+\]/ms", $h, $m)) {
-                $php_code = str_replace(",", "','", $m[0]);
-                $php_code = str_replace("[", "['", $php_code);
-                $php_code = str_replace("]", "']", $php_code);
-                $php_code = str_replace($m[1], "\$c1", $php_code) . ";";
+            if (preg_match_all("/(var\s+(_0x[a-z0-9]+))\=\[(\'[a-zA-Z0-9\=\+\/]+\'\,?)+\]/ms", $h, $m)) {
+            //print_r ($m);
+            if (isset($m[1][1])) {
+                $php_code = $m[0][1];
+                $php_code = str_replace($m[1][1], "\$c1", $php_code) . ";";
                 /* get second array $c1 and rotate */
                 eval($php_code);
-                $pat = "/\(" . $m[2] . "\,(0x[a-z0-9]+)/ms";
+                //print_r ($c1);
+                //die();
+                $pat = "/\(" . $m[2][1] . "\,(0x[a-z0-9]+)/ms";
                 if (preg_match($pat, $h, $n)) {
                     $x = hexdec($n[1]);
                     for ($k = 0; $k < $x; $k++) {
                         array_push($c1, array_shift($c1));
                     }
                 }
-                //echo $x;
-                /* Variant 1 only decode $c1 and get r.splice.... may be a solution
-                $out = "";
-                for ($k = 0; $k < count($c1); $k++) {
-                $out .= base64_decode($c1[$k]);
-                }
-                echo $out;
-                */
+                //print_r ($c1);
                 /* search and replace _0x3504(0x6) etc with second array $c1 */
-                $pat = "/" . $func1 . "\((0x[0-9a-f]+)\)/ms";
-                $pat1   = "/(" . $func1 . ")\((0x[a-z0-9]+),\s?(.*?)\)/"; //better
+                $pat = "/" . $func1 . "\(\'(0x[0-9a-f]+)\'\)/ms";
+                $pat1   = "/(" . $func1 . ")\(\'(0x[a-z0-9]+)\',\s?\'(.*?)\'\)/"; //better
                 if (preg_match_all($pat, $h, $q)) {
                    for ($k = 0; $k < count($q[1]); $k++) {
                     $h = str_replace($q[0][$k], base64_decode($c1[hexdec($q[1][$k])]), $h);
                    }
                 } else if (preg_match_all($pat1, $h, $p)) {
+                   //print_r ($p);
                    for ($z = 0; $z < count($p[0]); $z++) {
                     $h = str_replace($p[0][$z], abc($c1[hexdec($p[2][$z])], $p[3][$z]), $h);
                    }
+                   //echo $h;
                 }
+            }
             }
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
@@ -224,38 +222,42 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
             $pat   = "/(" . $func . ")\(\'(0x[a-z0-9]+)\',\s?\'(.*?)\'\)/"; //better
             if (preg_match_all($pat, $h, $p)) {
                 for ($z = 0; $z < count($p[0]); $z++) {
-                    $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
+                    $h = str_replace($p[0][$z], "'".abc($c0[hexdec($p[2][$z])], $p[3][$z])."'", $h);
                 }
             }
             /* search for second array var _0x13e4=[xcxcxc,xcxc,xcxcx ...] */
-            if (preg_match("/(var\s+(_0x[a-z0-9]+))\=\[([a-zA-Z0-9\=\+\/]+\,?)+\]/ms", $h, $m)) {
-                $php_code = str_replace(",", "','", $m[0]);
-                $php_code = str_replace("[", "['", $php_code);
-                $php_code = str_replace("]", "']", $php_code);
-                $php_code = str_replace($m[1], "\$c1", $php_code) . ";";
+            if (preg_match_all("/(var\s+(_0x[a-z0-9]+))\=\[(\'[a-zA-Z0-9\=\+\/]+\'\,?)+\]/ms", $h, $m)) {
+            //print_r ($m);
+            if (isset($m[1][0])) {
+                $php_code = $m[0][0];
+                $php_code = str_replace($m[1][0], "\$c1", $php_code) . ";";
                 /* get second array $c1 and rotate */
                 eval($php_code);
-                $pat = "/\(" . $m[2] . "\,(0x[a-z0-9]+)/ms";
+                //print_r ($c1);
+                //die();
+                $pat = "/\(" . $m[2][0] . "\,(0x[a-z0-9]+)/ms";
                 if (preg_match($pat, $h, $n)) {
                     $x = hexdec($n[1]);
                     for ($k = 0; $k < $x; $k++) {
                         array_push($c1, array_shift($c1));
                     }
                 }
-                /* Variant 1 only decode $c1 and get r.splice.... may be a solution
-                $out = "";
-                for ($k = 0; $k < count($c1); $k++) {
-                $out .= base64_decode($c1[$k]);
-                }
-                echo $out;
-                */
+                //print_r ($c1);
                 /* search and replace _0x3504(0x6) etc with second array $c1 */
-                $pat = "/" . $func1 . "\((0x[0-9a-f]+)\)/ms";
+                $pat = "/" . $func1 . "\(\'(0x[0-9a-f]+)\'\)/ms";
+                $pat1   = "/(" . $func1 . ")\(\'(0x[a-z0-9]+)\',\s?\'(.*?)\'\)/"; //better
                 if (preg_match_all($pat, $h, $q)) {
-                    for ($k = 0; $k < count($q[1]); $k++) {
-                        $h = str_replace($q[0][$k], base64_decode($c1[hexdec($q[1][$k])]), $h);
-                    }
+                   for ($k = 0; $k < count($q[1]); $k++) {
+                    $h = str_replace($q[0][$k], base64_decode($c1[hexdec($q[1][$k])]), $h);
+                   }
+                } else if (preg_match_all($pat1, $h, $p)) {
+                   //print_r ($p);
+                   for ($z = 0; $z < count($p[0]); $z++) {
+                    $h = str_replace($p[0][$z], abc($c1[hexdec($p[2][$z])], $p[3][$z]), $h);
+                   }
+                   //echo $h;
                 }
+            }
             }
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
@@ -268,7 +270,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
         }
     }
     /* $out */
-    //echo $out;
+    echo $out;
     $out=str_replace("(Math.round(","",$out);
     $out=str_replace("))","",$out);
     if (preg_match_all("/\(\"body\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
@@ -289,7 +291,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     eval($d);
     $x    = implode($r);
     $link = str_replace($a145, $x, $link);
-    var_dump (get_headers($link));
+    //var_dump (get_headers($link));
 } else {
     $link = "";
 }
