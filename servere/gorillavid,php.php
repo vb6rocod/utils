@@ -18,6 +18,11 @@
 * $filelink = input file
 * $link --> video_link
 */
+function str_between($string, $start, $end){
+	$string = " ".$string; $ini = strpos($string,$start);
+	if ($ini == 0) return ""; $ini += strlen($start); $len = strpos($string,$end,$ini) - $ini;
+	return substr($string,$ini,$len);
+}
 $filelink = "http://gorillavid.in/5qr7hux6j31r";
 
 if (strpos($filelink,"gorillavid") !== false) {

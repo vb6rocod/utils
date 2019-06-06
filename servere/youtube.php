@@ -97,12 +97,13 @@ function youtube($file) {
             if (isset($output['codecs'])) unset($output['codecs']);
             if (isset($output['fallback_host'])) unset($output['fallback_host']);
 
-            if (isset($output['sig'])) {
-                $signature = ($output['sig']);
+            if (!isset($output['s'])) {
+                $r=$output['url'];
 
             } else {
                 $sA = "";
                 $s = $output["s"];
+                $tip=$output["sp"];
                 $l = "https://s.ytimg.com".$parts['assets']['js'];
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $l);
@@ -159,9 +160,8 @@ function youtube($file) {
                     }
                 }
                 $signature = $sA;
+                $r=$output['url']."&".$tip."=".$signature;
             }
-            $r = $output['url'].
-            "&signature=".$signature;
 
             return $r;
         }

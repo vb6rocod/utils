@@ -38,7 +38,7 @@ if (strpos($filelink,"clipwatching") !== false) {
   if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m))
    $link=$m[1];
   else
-   $link="":
+   $link="";
 }
 echo $link;
 ?>

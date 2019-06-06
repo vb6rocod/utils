@@ -18,7 +18,11 @@
  * $filelink = input file
  * $link --> video_link
  */
-
+function str_between($string, $start, $end){
+	$string = " ".$string; $ini = strpos($string,$start);
+	if ($ini == 0) return ""; $ini += strlen($start); $len = strpos($string,$end,$ini) - $ini;
+	return substr($string,$ini,$len);
+}
 $filelink="http://entervideo.net/watch/4752dfc86f5df23";
 if (strpos($filelink,"entervideo.net") !==false) {
    $h=file_get_contents($filelink);

@@ -19,7 +19,12 @@
 * $filelink = "https://movpod.in/9hhueiilr5kb";
 * $link --> video_link
 */
-
+function str_between($string, $start, $end){
+	$string = " ".$string; $ini = strpos($string,$start);
+	if ($ini == 0) return ""; $ini += strlen($start); $len = strpos($string,$end,$ini) - $ini;
+	return substr($string,$ini,$len);
+}
+$filelink = "https://movpod.in/9hhueiilr5kb";
 if (strpos($filelink, "daclips.") !== false || strpos($filelink, "movpod.") !== false)
 	{
 
