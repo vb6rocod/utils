@@ -35,10 +35,16 @@ function abc($a52, $a10)
         $a54[$a72] = $a72;
     }
     */
+    /*
     for ($a72 = 0x0; $a72 < 0x100; $a72++) {     //new
         $a54[$a72] = (0x3 + $a72) % 0x100;
     }
+    */
 
+    for ($a72 = 0x0; $a72 < 0x100; $a72++) {     //new
+        $a54[$a72] = (0x3 + $a72 + pow(0x7c,0x0)) % 0x100;
+    }
+    
     for ($a72 = 0x0; $a72 < 0x100; $a72++) {
         $a55       = ($a55 + $a54[$a72] + ord($a10[($a72 % strlen($a10))])) % 0x100;
         $a56       = $a54[$a72];
@@ -118,6 +124,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
         $h = str_replace("+", "", $h);
         /* check if exist second array and get replacement for abc function and slice*/
         /* search Array[_0x3504(_0xfcc8('0x22','uSSR'))] */
+        /* Array[_0x2ec4('0x0','U$)L')][_0x2ec4('0x1','!M$O')] */
         if (preg_match("/Array\[(_0x[a-z0-9]+)\((_0x[a-z0-9]+)\(/", $h, $f)) {
             $func  = $f[2];
             $func1 = $f[1];
