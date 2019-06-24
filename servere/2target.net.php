@@ -46,7 +46,10 @@ if (strpos($filelink, "2target.net") !== false) {
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_HEADER, 1);
     $h1 = curl_exec($ch);
-
+    $t1 = explode('class="timer">',$h1);
+    $t2 = explode('<',$t1[1]);
+    $sec = $t2[0];
+    if (!$sec) $sec=2;
     $t1 = explode('<form method="post', $h1);
     $t2 = explode("</form", $t1[1]);
     $xx = '<form method="post' . $t2[0] . "</form>";
@@ -88,6 +91,7 @@ if (strpos($filelink, "2target.net") !== false) {
         'X-Requested-With: XMLHttpRequest',
         'Content-Length: ' . strlen($post) . ''
     );
+    sleep($sec);
     curl_setopt($ch, CURLOPT_URL, $l2);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
@@ -97,6 +101,7 @@ if (strpos($filelink, "2target.net") !== false) {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     $x = curl_exec($ch);
     curl_close($ch);
+
     $r = json_decode($x, 1);
     if (isset($r['url']))
         $link = $r['url'];
