@@ -37,9 +37,10 @@ if (strpos($filelink,"vidoza.net") !== false) {
     $link=str_replace("https","http",$link);
   } else
     $link="";
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2, $m)) {
-    $srt=$m[1];
-    if (strpos($srt,"empty") !== false) $srt="";
+  if (preg_match('/([http|https]?[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2, $m)) {
+   $srt=$m[1];
+   if (strpos($srt,"http") === false) $srt="https:".$srt;
+   if (strpos($srt,"empty") !== false) $srt="";
   }
 }
 echo $link;

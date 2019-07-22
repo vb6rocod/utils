@@ -52,8 +52,9 @@ function youtube($file) {
         $html = str_between($html, 'ytplayer.config = ', ';ytplayer.load');
         $parts = json_decode($html, 1);
 
-        if ($parts['args']['livestream'] == 1) {
-            $r1 = json_decode($parts['args']['player_response'], 1);
+        //if ($parts['args']['livestream'] == 1) {
+        $r1 = json_decode($parts['args']['player_response'], 1);
+        if (isset($r1['streamingData']["hlsManifestUrl"])) {
             $url = $r1['streamingData']["hlsManifestUrl"];
             $ua = "Mozilla/5.0 (Windows NT 5.1; rv:22.0) Gecko/20100101 Firefox/22.0";
             $ch = curl_init();
