@@ -71,7 +71,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     $head     = array(
         'Cookie: ref_url=' . urlencode($filelink) . '; BJS0=1; BJS1=1; e_' . $id . '=123456789'
     );
-    $l        = "https://povvideo.net/iframe-" . $id . "-954x562.html";
+    $l        = "https://powvideo.net/iframe-" . $id . "-954x562.html";
     $ch       = curl_init();
     curl_setopt($ch, CURLOPT_URL, $l);
     curl_setopt($ch, CURLOPT_REFERER, "https://povvideo.net/preview-" . $id . "-732x695.html");
@@ -103,7 +103,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     if (preg_match('/([\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.(srt|vtt)))/', $out, $xx)) {
         $srt = $xx[1];
     if (strpos("http", $srt) === false && $srt)
-        $srt = "https://povvideo.net" . $srt;
+        $srt = "https://powvideo.net" . $srt;
     }
 
     /* search first array var _0x1107=['asass','ssdsds',.....] */

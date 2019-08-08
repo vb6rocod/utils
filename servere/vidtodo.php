@@ -34,7 +34,10 @@ if (strpos($filelink, "vidtodo") !== false)
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	$h1 = curl_exec($ch);
 	curl_close($ch);
-	if (preg_match('/[{file:"]((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $h1, $m)) $link = $m[1];
+	require_once("JavaScriptUnpacker.php");
+    $jsu = new JavaScriptUnpacker();
+    $out = $jsu->Unpack($h1);
+	if (preg_match('/[{file:"]((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) $link = $m[1];
 	  else $link = "";
 	}
 
