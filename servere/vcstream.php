@@ -19,7 +19,7 @@
 * $link --> video_link
 */
 $filelink = "https://vcstream.to/embed/5b979c9fa292b/Strangers.S01E01.720p.HDTV.x264-ORGANiC.mp4";
-
+//https://vidcloud.co/embed/5b979c9fa292b/Strangers.S01E01.720p.HDTV.x264-ORGANiC.mp4
 if (strpos($filelink, "vcstream.to") !== false)
 	{
 	$cookie = $base_cookie . "vcstream.dat";
@@ -39,6 +39,7 @@ if (strpos($filelink, "vcstream.to") !== false)
 	$t1 = explode("url: '/", $h);
 	$t2 = explode("'", $t1[1]);
 	$l1 = "https://vcstream.to/" . $t2[0];
+	$l1 = "https://vidcloud.co/".$t2[0];
 	$head = array(
 		'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:61.0) Gecko/20100101 Firefox/61.0',
 		'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',

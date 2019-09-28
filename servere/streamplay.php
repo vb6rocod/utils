@@ -66,11 +66,13 @@ function abc($a52, $a10)
 }
 
 preg_match('/(?:\/\/|\.)(streamplay\.(?:to|club|top|me))\/(?:embed-|player-)?([0-9a-zA-Z]+)/', $filelink, $m);
-$filelink = "https://streamplay.me/player-" . $m[2] . "-920x360.html";
+$filelink = "https://streamp1ay.me/player-" . $m[2] . "-920x360.html";
 $ua       = $_SERVER["HTTP_USER_AGENT"];
 $head     = array(
     'Cookie: lang=1; ref_yrp=http%3A%2F%2Fcecileplanche-psychologue-lyon.com%2Fshow%2Fthe-good-cop%2Fseason-1%2Fepisode-2; ref_kun=1'
 );
+$head = array('Cookie: file_id=3357284; aff=2007; ref_yrp=; ref_kun=1; BetterJsPop0=1');
+
 $ch       = curl_init($filelink);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 curl_setopt($ch, CURLOPT_USERAGENT, $ua);
