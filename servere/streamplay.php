@@ -281,6 +281,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     /* $out */
     echo $out;
     $out=str_replace("(Math.round(","",$out);
+    $out=str_replace("Math.sqrt","sqrt",$out);
     $out=str_replace("))","",$out);
     if (preg_match_all("/\(\"body\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
         for ($k = 0; $k < count($u[0]); $k++) {
