@@ -36,10 +36,19 @@ if (strpos($filelink,"videomega.") !== false) {
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h);
   $out .=$h;
-  if (preg_match('/((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,\s\[\]]*(\.mp4))/', $out, $m)) {
+  if (preg_match('/((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,\s\[\]\(\)]*(\.mp4))/', $out, $m)) {
   $link=$m[1];
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,\s\[\]]*(\.(srt|vtt)))/', $out, $s))
-  $srt=$s[1];
+  if (preg_match_all('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,\)\(\s\[\]]*(\.(srt|vtt)))\"\,label\:\"(.*?)\"/', $out, $s))
+  $srts=array();
+  if (isset($s[4])) {
+    for ($k=0;$k<count($s[4]);$k++) {
+      $srts[$s[4][$k]] = $s[1][$k];
+    }
+  }
+  if (isset($srts["Romanian"]))
+    $srt=$srts["Romanian"];
+  elseif (isset($srts["English"]))
+    $srt=$srts["English"];
   } else {
     $link="";
   }
