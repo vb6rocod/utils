@@ -294,6 +294,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     $out = str_replace('"', "", $out);
     /* now is like array_splice($r, 3, 1);$r[388&15]=array_splice($r,388>>(3+3), 1, $r[388&15])[0]; etc */
     $d   = str_replace("r.splice(", "array_splice(\$r,", $out);
+    $d   = str_replace("r.splice (", "array_splice(\$r,", $d);
     $d   = str_replace("r[", "\$r[", $d);
 
     if (preg_match("/(array\_splice(.*))\;/", $d, $f)) {

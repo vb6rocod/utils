@@ -271,6 +271,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $let = $e[2];
+                //print_r ($e);
                 /* now is "r" - for future.... */
                 $out = str_replace(";;", ";", $e[1]);
             } else {
@@ -279,11 +280,12 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
         }
     }
     /* $out */
-    echo $out;
+    echo $out."<BR>";
     $out=str_replace("(Math.round(","",$out);
     $out=str_replace("Math.sqrt","sqrt",$out);
     $out=str_replace("))","",$out);
     if (preg_match_all("/\(\"body\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
+      //print_r ($u);
         for ($k = 0; $k < count($u[0]); $k++) {
             $out = str_replace("$" . $u[0][$k] . ";", "", $out);
             $out = str_replace('$("body").data("' . $u[1][$k] . '")', $u[2][$k], $out);
@@ -292,8 +294,8 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     $out = str_replace('"', "", $out);
     /* now is like array_splice($r, 3, 1);$r[388&15]=array_splice($r,388>>(3+3), 1, $r[388&15])[0]; etc */
     $d   = str_replace("r.splice(", "array_splice(\$r,", $out);
+    $d   = str_replace("r.splice (", "array_splice(\$r,", $d);
     $d   = str_replace("r[", "\$r[", $d);
-
     if (preg_match("/(array\_splice(.*))\;/", $d, $f)) {
         $d = $f[0];
     }
@@ -306,5 +308,5 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     $link = "";
 }
 }
-echo $link;
+echo "<BR>".$link;
 ?>
