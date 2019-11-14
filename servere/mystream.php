@@ -20,7 +20,7 @@
 */
 $filelink = "https://embed.mystream.to/pufpln9x8ejh";
 
-if (strpos($filelink,"mystream.") !== false) {
+if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.cloud") !==false) {
   require_once('AADecoder.php');
   $h=file_get_contents($filelink);
   $h1=AADecoder::decode($h);

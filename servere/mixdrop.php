@@ -21,6 +21,7 @@
 
 $filelink="https://mixdrop.co/e/eaeuizxtz0";
 if (strpos($filelink,"mixdrop.co") !== false) {
+  $filelink=str_replace("mixdrop.co/f/","mixdrop.co/e/",$filelink);
   require_once("JavaScriptUnpacker.php");
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);

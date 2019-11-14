@@ -1,5 +1,5 @@
 <?php
-/* resolve clipwatching
+/* resolve vidia
 * Copyright (c) 2019 vb6rocod
 *
 *
@@ -18,9 +18,10 @@
 * $filelink = input file
 * $link --> video_link
 */
-$filelink = "https://clipwatching.com/tr9ppil1qbrq/the.walking.dead.s09e16.720p.web.h264-tbs.mkv.html";
+$filelink = "https://vidia.tv/ekc59ths2ex4.htm";
 
-if (strpos($filelink,"clipwatching") !== false) {
+if (strpos($filelink,"vidia.tv") !== false) {
+  //https://vidia.tv/embed-ekc59ths2ex4.html
   require_once("JavaScriptUnpacker.php");
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
@@ -35,11 +36,15 @@ if (strpos($filelink,"clipwatching") !== false) {
   curl_close($ch);
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h);
-  $out .=$h;
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(v\.mp4))/', $out, $m))
-   $link=$m[1];
-  else
-   $link="";
+  if (preg_match('/file:"((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
+  $link=$m[1];
+  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $out, $s)) {
+  $srt=$s[1];
+  if (strpos($srt,"empty.srt") !== false) $srt="";
+  }
+  } else {
+    $link="";
+  }
 }
 echo $link;
 ?>

@@ -27,7 +27,7 @@ if (strpos($filelink, "thevideobee.to") !== false)
 
 	$pattern = '/(?:\/\/|\.)(thevideobee\.to)\/(?:embed-|)?([0-9a-zA-Z]+)/';
 	preg_match($pattern, $filelink, $m);
-	$filelink = "https://thevideobee.to/" . $m[2] . ".html";
+	$filelink = "https://thevideobee.to/embed-" . $m[2] . ".html";
 	$ch = curl_init($filelink);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_REFERER, $filelink);
@@ -38,34 +38,7 @@ if (strpos($filelink, "thevideobee.to") !== false)
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	$h = curl_exec($ch);
 	curl_close($ch);
-	$id = str_between($h, 'name="id" value="', '"');
-	$fname = str_between($h, 'name="fname" value="', '"');
-	$referer = str_between($h, 'referer" value="', '"');
-	$hash = str_between($h, 'name="hash" value="', '"');
-	$usr_login = str_between($h, 'usr_login" value="', '"');
-	$post = "op=download1&usr_login=" . $usr_login . "&id=" . $id . "&fname=" . urlencode($fname) . "&referer=" . $referer . "&hash=" . $hash . "&imhuman=Proceed+to+video";
-	$head = array(
-		'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-		'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-		'Accept-Encoding: deflate',
-		'Content-Type: application/x-www-form-urlencoded',
-		'Content-Length: ' . strlen($post) . ''
-	);
-	sleep(1);
-	$ch = curl_init($filelink);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
-	curl_setopt($ch, CURLOPT_HEADER, 1);
-	curl_setopt($ch, CURLOPT_REFERER, $filelink);
-	curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // RETURN THE CONTENTS OF THE CALL
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-	$h = curl_exec($ch);
-	curl_close($ch);
-	if (preg_match('/[src="]((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(mp4|m3u8)))/', $h, $m)) $link = $m[1];
+	if (preg_match('/((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(mp4|m3u8)))/', $h, $m)) $link = $m[1];
 	  else $link = "";
 	if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.vtt|\.srt))/', $h, $m))
 		{
