@@ -70,9 +70,9 @@ if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.cloud")
   $link=$m[1];
   } elseif (preg_match($pat1, $h1)) {
    $h1=decode_code($h1);
-   $t1=explode("atob('",$h1);
-   $t2=explode("'",$t1[1]);
-   $encoded=$t2[0];
+   $pat1="/setAttribute\(\'src\',\s*vv\(key,\s*atob\(\'(\S+)\'/";
+   preg_match($pat1, $h1,$q);
+   $encoded=$q[1];
    if (preg_match("/(var\s+(_0x[a-z0-9]+))\=\[(\'[a-zA-Z0-9\=\+\/]+\'\,?)+\]/ms", $h1, $m)) {
         $php_code = str_replace($m[1], "\$c0", $m[0]) . ";";
         eval($php_code);
@@ -91,12 +91,15 @@ if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.cloud")
    $t1=explode('<script>',$h1);
    $t2=explode('</script',$t1[1]);
    $z=trim($t2[0]);
-   $z = jjdecode($z);
+   $z1 = jjdecode($z);
+   if (strpos($z1,"atob") !== false) $z=$z1;
    $t1=explode("atob('",$z);
    $t2=explode("'",$t1[1]);
    $dec=base64_decode($t2[0]);   // 1147|window.bqtk0='r9u1d9g3q7m4z8y7s8o7p3e7';|1903
+   //echo $dec;
    $t1=explode("'",$dec);
    $hash=$t1[1];
+   //echo $hash;
 /*
 var l = c2('0x0');
 var n = c2('0x1');
