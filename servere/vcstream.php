@@ -20,48 +20,16 @@
 */
 $filelink = "https://vcstream.to/embed/5b979c9fa292b/Strangers.S01E01.720p.HDTV.x264-ORGANiC.mp4";
 //https://vidcloud.co/embed/5b979c9fa292b/Strangers.S01E01.720p.HDTV.x264-ORGANiC.mp4
-if (strpos($filelink, "vcstream.to") !== false)
+if (strpos($filelink, "vcstream.to") !== false  || strpos($filelink,"vidcloud.co") !== false)
 	{
-	$cookie = $base_cookie . "vcstream.dat";
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $filelink);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; rv:61.0) Gecko/20100101 Firefox/61.0');
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($ch, CURLOPT_ENCODING, "");
-	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
-	curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-	$h = curl_exec($ch);
-	curl_close($ch);
-	$t1 = explode("url: '/", $h);
-	$t2 = explode("'", $t1[1]);
-	$l1 = "https://vcstream.to/" . $t2[0];
-	$l1 = "https://vidcloud.co/".$t2[0];
-	$head = array(
-		'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:61.0) Gecko/20100101 Firefox/61.0',
-		'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-		'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-		'Accept-Encoding: gzip, deflate, br'
-	);
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $l1);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_ENCODING, "");
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
-	curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-	$h = curl_exec($ch);
-	curl_close($ch);
-	$h = str_replace("\\", "", $h);
-	$t1 = explode('file":"', $h);
-	$t2 = explode('"', $t1[1]);
-	$link = $t2[0];
+    preg_match("/(embed\/|fid\=)([a-zA-Z0-9]+)/",$filelink,$m);
+    $l="https://vidcloud.co/player?fid=".$m[2]."&page=embed";
+
+    $h=file_get_contents($l);
+    $h=str_replace("\\","",$h);
+    $t1=explode('file":"',$h);
+    $t2=explode('"',$t1[1]);
+    $link=$t2[0];
 	if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $m)) $srt = $m[1];
 	}
 
