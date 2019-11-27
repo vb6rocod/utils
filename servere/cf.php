@@ -35,9 +35,9 @@ function rr($js_code)
 function getClearanceLink($content, $url)
 	{
 	sleep(4);
-	preg_match_all('/name="\w+" value="(.+?)"/', $content, $matches);
+    preg_match_all('/name="\w+" value="(.*?)"/', $content, $matches);
 	$params = array();
-	list($params['s'], $params['jschl_vc'], $params['pass']) = $matches[1];
+    list($params['r'],$params['jschl_vc'], $params['pass']) = $matches[1];
 	$uri = parse_url($url);
 	$host = $uri["host"];
 	$result = "";
