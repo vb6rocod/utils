@@ -173,6 +173,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
             }
             }
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $let = $e[2];
                 /* now is "r" - for future.... */
@@ -191,6 +192,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
             }
             //echo $h;
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $out = str_replace(";;", ";", $e[1]);
             } else {
@@ -219,6 +221,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
             for ($z = 0; $z < count($p[0]); $z++) {
                 $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
             }
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $out = str_replace(";;", ";", $e[1]);
             } else {
@@ -269,6 +272,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
             }
             }
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $let = $e[2];
                 //print_r ($e);

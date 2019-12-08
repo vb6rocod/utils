@@ -66,19 +66,22 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     require_once("JavaScriptUnpacker.php");
     preg_match('/(powvideo|powvideo)\.(net|cc)\/(?:embed-|iframe-|preview-|)([a-z0-9]+)/', $filelink, $m);
     $id       = $m[3];
-    $filelink = "https://povvideo.net/embed-" . $id . ".html";
+    $filelink="https://powvldeo.co/embed-".$id.".html";
     $ua       = $_SERVER["HTTP_USER_AGENT"];
-    $head     = array(
-        'Cookie: ref_url=' . urlencode($filelink) . '; BJS0=1; BJS1=1; e_' . $id . '=123456789'
-    );
-    $l        = "https://powvideo.net/iframe-" . $id . "-954x562.html";
+    $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+     'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+     'Accept-Encoding: deflate',
+     'Connection: keep-alive',
+     'Referer: https://powvldeo.co/preview-'.$id.'-1280x665.html',
+     'Cookie: ref_url='.urlencode($filelink).'; e_'.$id.'=123456789',
+     'Upgrade-Insecure-Requests: 1');
+    $l        = "https://powvldeo.co/iframe-" . $id . "-954x562.html";
     $ch       = curl_init();
     curl_setopt($ch, CURLOPT_URL, $l);
-    curl_setopt($ch, CURLOPT_REFERER, "https://povvideo.net/preview-" . $id . "-732x695.html");
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
     curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-    curl_setopt($ch, CURLOPT_ENCODING, "");
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
@@ -175,6 +178,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
             }
             }
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $let = $e[2];
                 /* now is "r" - for future.... */
@@ -193,6 +197,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
             }
             //echo $h;
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $out = str_replace(";;", ";", $e[1]);
             } else {
@@ -221,6 +226,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
             for ($z = 0; $z < count($p[0]); $z++) {
                 $h = str_replace($p[0][$z], abc($c0[hexdec($p[2][$z])], $p[3][$z]), $h);
             }
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $out = str_replace(";;", ";", $e[1]);
             } else {
@@ -271,6 +277,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
             }
             }
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
+            $h=str_replace("'","",$h);
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $let = $e[2];
                 /* now is "r" - for future.... */
