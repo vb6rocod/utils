@@ -21,8 +21,9 @@
 
 $filelink="https://vidlox.tv/5bji3c5f1jju";
 if (strpos($filelink,"vidlox") !== false) {
-  $filelink=str_replace("https","http",$filelink);
-  $filelink=str_replace("http","https",$filelink);
+  preg_match("/vidlox\.(me|tv)\/(?:embed-)?([0-9a-zA-Z]+)/",$filelink,$m);
+  $id=$m[2];
+  $filelink="https://vidlox.me/".$id;
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
