@@ -92,13 +92,18 @@ if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.cloud")
    $t2=explode('</script',$t1[1]);
    $z=trim($t2[0]);
    $z1 = jjdecode($z);
+   //echo $z1;
    if (strpos($z1,"atob") !== false) $z=$z1;
    $t1=explode("atob('",$z);
    $t2=explode("'",$t1[1]);
    $dec=base64_decode($t2[0]);   // 1147|window.bqtk0='r9u1d9g3q7m4z8y7s8o7p3e7';|1903
-   //echo $dec;
+   echo $dec."<BR>";
    $t1=explode("'",$dec);
    $hash=$t1[1];
+   if (!$hash) {
+   $t1=explode("|",$dec);   //9895|p1y2f5o9s1i5b1k4x7c8a0w7|slxbn|4836
+   $hash= $t1[1];
+   }
    //echo $hash;
 /*
 var l = c2('0x0');
