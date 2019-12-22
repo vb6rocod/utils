@@ -37,7 +37,7 @@ if (strpos($filelink,"mixdrop.co") !== false) {
   curl_close($ch);
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h3);
-  if (preg_match("/vsrc?\s*\=\s*\"(.*?)\"/",$out,$m)) {
+  if (preg_match("/vsrc?.?\s*\=\s*\"(.*?)\"/",$out,$m)) {
     $link=$m[1];
     if (strpos($link,"http") === false) $link="https:".$link;
       if (preg_match("/\.sub\s*\=\s*\"(.*?)\"/",$out,$s)) {

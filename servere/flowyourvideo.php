@@ -18,7 +18,65 @@
  * $filelink = input file
  * $link --> video_link
  */
-
+$filelink="https://jwplayer.flowyourvideo.com/embed/5dfc71257bfcf?subtitles=https://isubsmovies.com/subtitles/7984734/&height=720";
+if (strpos($filelink,"jwplayer.flowyourvideo") !== false) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $filelink);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0');
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch,CURLOPT_REFERER,"https://www1.subsmovies.nz");
+  curl_setopt($ch, CURLOPT_ENCODING, "");
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+  $h3 = curl_exec($ch);
+  curl_close($ch);
+  $t1=explode('file: "',$h3);
+  $t2=explode('"',$t1[1]);
+  $link=$t2[0];
+  if (strpos($link,"http") === false && $link) $link="https:".$link;
+  if ($link) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $link);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0');
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_ENCODING, "");
+  curl_setopt($ch,CURLOPT_REFERER,$filelink);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch,CURLOPT_HEADER,1);
+  curl_setopt($ch,CURLOPT_NOBODY,1);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+  $h4 = curl_exec($ch);
+  curl_close($ch);
+  $t1=explode("Location:",$h4);
+  $t2=explode("\n",$t1[1]);
+  $link=trim($t2[0]);
+  }
+  parse_str(parse_url($filelink)['query'],$output);
+  if (isset($output['subtitles'])) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $output['subtitles']);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0');
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch,CURLOPT_REFERER,"https://www1.subsmovies.nz");
+  curl_setopt($ch, CURLOPT_ENCODING, "");
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+  $h3 = curl_exec($ch);
+  curl_close($ch);
+  $s=json_decode($h3,1);
+  if (isset($s['Romanian']))
+    $srt=$s['Romanian'][0]['link'];
+  elseif (isset($s['English']))
+    $srt=$s['English'][0]['link'];
+  }
+}
+/* old ......*/
 $filelink="http://www.flowyourvideo.com/embed/5bdc09bb56f6f";
 if (strpos($filelink,"flowyourvideo") !== false) {
   $ch = curl_init();
