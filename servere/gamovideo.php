@@ -23,6 +23,7 @@ $filelink="http://gamovideo.com/1henwi0d5boj";
 if (strpos($filelink,"gamovideo.") !== false) {
   //http://gamovideo.com/gd82bzc3i6eq
   //http://gamovideo.com/embed-gd82bzc3i6eq-640x360.html
+  $ua="Mozilla/5.0 (Windows NT 10.0; rv:71.0) Gecko/20100101 Firefox/71.0";
   $pattern = '@(?:\/\/|\.)(gamovideo\.com)\/(?:embed-)?([a-zA-Z0-9]+)@';
   preg_match($pattern,$filelink,$r);
   $l="http://gamovideo.com/".$r[2];
@@ -31,7 +32,7 @@ if (strpos($filelink,"gamovideo.") !== false) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $l);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; rv:65.0) Gecko/20100101 Firefox/65.0");
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
   curl_setopt($ch, CURLOPT_ENCODING, "");
   curl_setopt($ch, CURLOPT_HTTPHEADER, $head);

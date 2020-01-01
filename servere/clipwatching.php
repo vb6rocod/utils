@@ -36,7 +36,7 @@ if (strpos($filelink,"clipwatching") !== false) {
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h);
   $out .=$h;
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(v\.mp4))/', $out, $m))
+  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\/v\.mp4))/', $out, $m))
    $link=$m[1];
   else
    $link="";

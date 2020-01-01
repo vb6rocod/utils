@@ -21,6 +21,8 @@
 
 $filelink="https://cloudvideo.tv/wpdo30vv84c0";
 if (strpos($filelink,"cloudvideo") !== false) {
+  preg_match("/cloudvideo\.tv\/(embed-)?([a-zA-Z0-9_]+)/",$filelink,$m);
+  $filelink="https://cloudvideo.tv/embed-".$m[2].".html";
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
