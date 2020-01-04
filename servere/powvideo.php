@@ -289,13 +289,14 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     }
     /* $out */
     echo $out;
-    $out=preg_replace("/Math\.(\w+)/","$1",$out);
-    $out=preg_replace("/Math\[\"(\w+)\"\]/","$1",$out);
-    $out=preg_replace("/Math\[\"(\w+)\"\s*\+\s*\"(\w+)\"\]/","$1$2",$out);
-    //echo $out;
-    $out=str_replace("(Math.round(","",$out);
-    $out=str_replace("Math.sqrt","sqrt",$out);
-    $out=str_replace('Math["sqrt"]','sqrt',$out);
+    $out=str_replace("Math.","",$out);
+    $out=preg_replace_callback(
+    "/Math\[(.*?)\]/",
+    function ($matches) {
+      return preg_replace("/(\s|\"|\+)/","",$matches[1]);;
+    },
+    $out
+    );
     $out=str_replace("))","",$out);
     if(preg_match_all("/\\$\(\"([a-zA-Z0-9\.\:\_\-]+)\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
         for ($k = 0; $k < count($u[0]); $k++) {
