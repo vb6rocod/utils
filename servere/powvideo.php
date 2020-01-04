@@ -291,6 +291,8 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     echo $out;
     $out=preg_replace("/Math\.(\w+)/","$1",$out);
     $out=preg_replace("/Math\[\"(\w+)\"\]/","$1",$out);
+    $out=preg_replace("/Math\[\"(\w+)\"\s*\+\s*\"(\w+)\"\]/","$1$2",$out);
+    //echo $out;
     $out=str_replace("(Math.round(","",$out);
     $out=str_replace("Math.sqrt","sqrt",$out);
     $out=str_replace('Math["sqrt"]','sqrt',$out);

@@ -287,6 +287,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     echo $out."<BR>";
     $out=preg_replace("/Math\.(\w+)/","$1",$out);
     $out=preg_replace("/Math\[\"(\w+)\"\]/","$1",$out);
+    $out=preg_replace("/Math\[\"(\w+)\"\s*\+\s*\"(\w+)\"\]/","$1$2",$out);
     $out=str_replace("(Math.round(","",$out);
     $out=str_replace("Math.sqrt","sqrt",$out);
     $out=str_replace('Math["sqrt"]','sqrt',$out);
