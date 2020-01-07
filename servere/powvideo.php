@@ -97,6 +97,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
        $t1 = explode("function getCalcReferrer", $h);
        $h  = $t1[1];
     }
+    //echo $h;
     $jsu   = new JavaScriptUnpacker();
     $out   = $jsu->Unpack($h);
     if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)) {
@@ -198,6 +199,8 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
             //echo $h;
             /* now $h contain  var _0x1d4745=r.splice ..... eval(_0x1d4745) */
             $h=str_replace("'","",$h);
+            //echo $h;
+
             if (preg_match("/((\w)\.splice.*?)eval/ms", $h, $e)) {
                 $out = str_replace(";;", ";", $e[1]);
             } else {
@@ -206,7 +209,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
         }
         /* $out can like this r.splice( "3", 1);$("body").data("f 0",197);r[$("body").data("f 0")&15]=r.splice($("body").data("f 0")>>(33), 1 */
 
-
+        //echo $h;
     } else if (preg_match("/(function\s?(_0x[a-z0-9]+)\(\)\{return)\[(\'[a-zA-Z0-9\=\+\/]+\'\,?)+\]/ms", $h, $m)) {
         $php_code = str_replace($m[1], "\$c0=", $m[0]) . ";";
         eval($php_code);
@@ -288,7 +291,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
         }
     }
     /* $out */
-    echo $out;
+    //echo $out;
     $out=str_replace("Math.","",$out);
     $out=preg_replace_callback(
     "/Math\[(.*?)\]/",
@@ -297,30 +300,17 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     },
     $out
     );
-    $out=str_replace("))","",$out);
-    if(preg_match_all("/\\$\(\"([a-zA-Z0-9\.\:\_\-]+)\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
+    if(preg_match_all("/\\$\(\"([a-zA-Z0-9\.\:\_\-]+)\"\)\.data\(\"(\w\s*\d)\"\,([a-zA-Z0-9\)\(]+)\)/", $out, $u)) {
         for ($k = 0; $k < count($u[0]); $k++) {
             $out = str_replace($u[0][$k] . ";", "", $out);
-            $out = str_replace('$("'.$u[1][$k].'").data("' . $u[2][$k] . '")', $u[3][$k], $out);
+            $v1="\$v=".$u[3][$k].";";
+            eval ($v1);
+            $out = str_replace('$("'.$u[1][$k].'").data("' . $u[2][$k] . '")', $v, $out);
         }
     }
-    echo $out;
-
-    if (preg_match_all("/\(\"body\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
-        for ($k = 0; $k < count($u[0]); $k++) {
-            $out = str_replace("$" . $u[0][$k] . ";", "", $out);
-            $out = str_replace('$("body").data("' . $u[1][$k] . '")', $u[2][$k], $out);
-        }
-    }
-// new
-    if (preg_match_all("/\(\"div\:first\"\)\.data\(\"(\w\s*\d)\"\,(\d+)\)/", $out, $u)) {
-        for ($k = 0; $k < count($u[0]); $k++) {
-            $out = str_replace("$" . $u[0][$k] . ";", "", $out);
-            $out = str_replace('$("div:first").data("' . $u[1][$k] . '")', $u[2][$k], $out);
-        }
-    }
-//
     $out = str_replace('"', "", $out);
+    $out=str_replace("))","",$out);
+
     /* now is like array_splice($r, 3, 1);$r[388&15]=array_splice($r,388>>(3+3), 1, $r[388&15])[0]; etc */
     $d   = str_replace("r.splice(", "array_splice(\$r,", $out);
     $d   = str_replace("r.splice (", "array_splice(\$r,", $d);
@@ -338,5 +328,6 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     $link = "";
 }
 }
+echo "<BR>".$out;
 echo "<BR>".$a145."<BR>".$link;
 ?>
