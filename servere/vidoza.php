@@ -20,7 +20,7 @@
  */
 
 $filelink="https://vidoza.net/hru9n8jb1f8z.html";
-if (strpos($filelink,"vidoza.net") !== false) {
+if (strpos($filelink,"vidoza.net") !== false || strpos($filelink,"testaway.xyz") !== false) {
   if (strpos($filelink,"https") === false) $filelink=str_replace("http","https",$filelink);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);

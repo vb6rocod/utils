@@ -21,7 +21,7 @@
 
 $filelink="https://vidlox.tv/5bji3c5f1jju";
 if (strpos($filelink,"vidlox") !== false) {
-  preg_match("/vidlox\.(me|tv)\/(?:embed-)?([0-9a-zA-Z]+)/",$filelink,$m);
+  preg_match("/vidlox\.(me|tv|xyz)\/(?:embed-|source\/)?([0-9a-zA-Z]+)/",$filelink,$m);
   $id=$m[2];
   $filelink="https://vidlox.me/".$id;
   $ch = curl_init();

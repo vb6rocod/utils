@@ -32,9 +32,8 @@ if (strpos($filelink,"jwplayer.flowyourvideo") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h3 = curl_exec($ch);
   curl_close($ch);
-  $t1=explode('file: "',$h3);
-  $t2=explode('"',$t1[1]);
-  $link=$t2[0];
+  if (preg_match("/file\:\s+(\'|\")(.*?)(\'|\")/",$h3,$m))
+    $link=$m[2];
   if (strpos($link,"http") === false && $link) $link="https:".$link;
   if ($link) {
   $ch = curl_init();
