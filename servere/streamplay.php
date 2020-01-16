@@ -310,6 +310,7 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     }
     /* $out */
     //echo $out."<BR>";
+    $out=str_replace(" ","",$out);
     $out=str_replace("Math.","",$out);
     $out=preg_replace_callback(
     "/Math\[(.*?)\]/",
@@ -318,7 +319,13 @@ if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.mp4))/', $out, $m)
     },
     $out
     );
-
+    $out=preg_replace_callback(
+    "/\[([a-dt\"\+]+)\]/",
+    function ($matches) {
+      return ".".preg_replace("/(\s|\"|\+)/","",$matches[1]);;
+    },
+    $out
+    );
     $out=str_replace("PI","M_PI",$out);
     if(preg_match_all("/(\\$\(\"([a-zA-Z0-9_\.\:\_\-]+)\"\)\.data\(\"(\w+\s*\d)\")\,([a-zA-Z0-9\)\(]+)\)/", $out, $u)) {
         for ($k = 0; $k < count($u[0]); $k++) {
