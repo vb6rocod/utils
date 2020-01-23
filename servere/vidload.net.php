@@ -1,5 +1,5 @@
 <?php
-/* resolve videomega
+/* resolve vidload.net
 * Copyright (c) 2019 vb6rocod
 *
 *
@@ -18,26 +18,10 @@
 * $filelink = input file
 * $link --> video_link
 */
-$filelink = "https://www.videomega.co/e/78f604df6f6786a8";
-/* model..... varianta 10000000+
-function bode() {
-var tnaketalikom = document.getElementById('5deea49887336').getAttribute('href')
-var bigbangass = document.getElementById('5deea498873a0').getAttribute('href')
-var fuckoff = document.getElementById('5deea498872cb').getAttribute('href')
-var xhr = new XMLHttpRequest();
-xhr.open("POST", '/streamurl/'+bigbangass+'/', true);
-xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-xhr.onreadystatechange = function() { //Appelle une fonction au changement d'état.
-if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-document.getElementById("crexcode").style.display = "none";
-document.getElementById('iframe').src = this.responseText;
-}
-}
-xhr.send("myreason=" + tnaketalikom + "&saveme=" + fuckoff);
-}
-*/
-if (strpos($filelink,"videomega.") !== false) {
-  $cookie="videomega.dat";
+$filelink = "https://www.vidload.net/e/29d045cffe0231a4";
+
+if (strpos($filelink,"vidload.net") !== false) {
+  $cookie="videomega.dat"; // very similar
   require_once("JavaScriptUnpacker.php");
   $filelink=str_replace("/f/","/e/",$filelink);
   $ch = curl_init();
@@ -60,6 +44,11 @@ if (strpos($filelink,"videomega.") !== false) {
   for ($k=0;$k<count($m[2]);$k++) {
    $ids[$m[2][$k]]=$m[1][$k];
   }
+  // type="hidden" id="5e29af3b6ac6b" value="
+  preg_match_all("/type\=\"hidden\"\s*id=\"(.*?)\"\s*value\=\"(.*?)\"/ms",$h,$m);
+  for ($k=0;$k<count($m[2]);$k++) {
+   $ids[$m[1][$k]]=$m[2][$k];
+  }
   // bigbangass=document.getElementById("
   $rep=array();
   preg_match_all("/(\w+)\s*\=\s*document\.getElementById\([\'\"](\w+)[\'\"]/ms",$h,$m);
@@ -79,14 +68,14 @@ if (strpos($filelink,"videomega.") !== false) {
   preg_match("/streamurl\/[\'|\"]\s*\+\s*(\w+)/ms",$h,$m);
   $id=$m[1];
   $str_url=$rep[$id];
-  $l="https://www.videomega.co/streamurl/".$str_url."/";
-
+  $l="https://www.vidload.net/streamurl/".$str_url."/";
+  //echo $l;
   $head=array('Accept: */*',
   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
   'Accept-Encoding: deflate',
   'Content-Type: application/x-www-form-urlencoded',
   'Content-Length: '.strlen($post).'',
-  'Origin: https://www.videomega.co',
+  'Origin: https://www.vidload.net',
   'Connection: keep-alive',
   'Referer: '.$filelink.'');
   $ch = curl_init();
@@ -103,6 +92,8 @@ if (strpos($filelink,"videomega.") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $l = curl_exec($ch);
   curl_close($ch);
+  //echo "\n".$l;
+  $l="https://www.vidload.net".$l;
   $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
   'Accept-Encoding: deflate',
@@ -121,14 +112,13 @@ if (strpos($filelink,"videomega.") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h3 = curl_exec($ch);
   curl_close($ch);
-
+  //echo $h3;
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h3);
-  //echo $out."\n";
+
   $out .=$h3;
-  //echo $out;
-  if (preg_match('/((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,\s\[\+\]\(\)]*(\.mp4))/', $out, $m)) {
-  $link=$m[1];
+  if (preg_match('/http.+\.mp4/', $out, $m)) {
+  $link=$m[0];
   if (preg_match_all('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,\)\(\s\[\+\]]*(\.(srt|vtt)))\" srclang=\"\S+\" label=\"(.*?)\"/', $out, $s))
   //print_r ($s);
   $srts=array();

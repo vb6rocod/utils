@@ -30,6 +30,7 @@ function decode_code($code){
 }
 function abc($a52, $a10)
 {
+    global $mod;
     $a54 = array();
     $a55 = 0x0;
     $a56 = '';
@@ -37,10 +38,26 @@ function abc($a52, $a10)
     $a58 = '';
     $a52 = base64_decode($a52);
     $a52 = mb_convert_encoding($a52, 'ISO-8859-1', 'UTF-8');
-
+    /*
     for ($a72 = 0x0; $a72 < 0x100; $a72++) {
         $a54[$a72] = $a72;
     }
+    */
+    /*
+    for ($a72 = 0x0; $a72 < 0x100; $a72++) {     //new
+        $a54[$a72] = (0x3 + $a72) % 0x100;
+    }
+    */
+    /*
+    for ($a72 = 0x0; $a72 < 0x100; $a72++) {     //new
+        $a54[$a72] = (0x3 + $a72 + pow(0x7c,0x0)) % 0x100;
+    }
+    */
+
+    for ($a72 = 0x0; $a72 < 0x100; $a72++) {
+      eval ($mod);
+    }
+
     for ($a72 = 0x0; $a72 < 0x100; $a72++) {
         $a55       = ($a55 + $a54[$a72] + ord($a10[($a72 % strlen($a10))])) % 0x100;
         $a56       = $a54[$a72];
@@ -72,30 +89,69 @@ function abc($a52, $a10)
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
   curl_close($ch);
-  $t1=explode("var plyrc4 = '",$h);
-  $t2=explode("'",$t1[1]);
-  $rc4=base64_decode($t2[0]);
-  $t1=explode('<!--rc4-->',$h);
-  $h=$t1[1];
   $h=decode_code($h);
-  preg_match("/var\s?a\=\[(.*?)\]/mei",$h,$m);
-  $php_code = "\$c0=array(".$m[1].");";
-  eval ($php_code);
-  preg_match("/\(a\,(0x[a-z0-9]+)\)/mei",$h,$n);
-  $x = hexdec($n[1]);
-  for ($k = 0; $k < $x; $k++) {
-   array_push($c0, array_shift($c0));
+  preg_match("/var (\w+)\s*\=\s*\'([\w\+\\_\/\=]{100,})\'\;/ms",$h,$m); // var hxstring = '8j.....
+  $rc4=base64_decode($m[2]);
+  // fix abc function
+  $t1=explode('decodeURIComponent',$h);
+  $t2=explode('{',$t1[1]);
+  $t3=explode(';',$t2[1]);
+  $mod=$t3[0];
+  $mod=str_replace("Math.","",$mod);
+  $mod=preg_replace_callback(
+   "/Math\[(.*?)\]/",
+   function ($matches) {
+    return preg_replace("/(\s|\"|\'|\+)/","",$matches[1]);;
+   },
+   $mod
+  );
+
+  preg_match_all("/(_0x)?[a-zA-Z0-9]+/",$mod,$m);
+  $mod=str_replace($m[0][0],"\$a54",$mod);
+  $mod=str_replace($m[0][1],"\$a72",$mod);
+  $mod=$mod.";";
+  // end fix
+
+  $h=str_replace(" ","",$h);
+  $h=str_replace("'",'"',$h); // avoid abc('0x0','fg'x')
+  $pat1="(var\s*((_0x)?[a-z0-9_]+)(\=))";
+  $pat2="(function\s*((_0x)?[a-z0-9_]+)(\(\)\{return))";
+  $pat3="\[(\"?[a-zA-Z0-9_\=\+\/]+\"?\,?)+\]";
+  $pat="/(".$pat1."|".$pat2.")".$pat3."/ms";
+  while (preg_match($pat,$h,$m)) {
+  $c0=array();
+  $x=0;
+  $code=str_replace($m[1],"\$c0=",$m[0].";");
+  eval ($code);
+  $pat = "/\(" . $m[3].$m[6] . "\,(0x[a-z0-9_]+)/";
+  if (preg_match($pat, $h, $n)) {
+    $x = hexdec($n[1]);
+    for ($k = 0; $k < $x; $k++) {
+      array_push($c0, array_shift($c0));
+    }
   }
-  preg_match("/eval\(f\(b\(\'(0x[a-z0-9]+)\'\,\'(.*?)\'/mei",$h,$p);
-  $key=abc($c0[hexdec($p[1])],$p[2]);
-  $dec = rc4($key, $rc4);
-  //echo $dec."<BR>";
-  if (preg_match('/file":"((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $dec, $m)) {
+  $h=str_replace("+","",$h);
+  // _0x_0x36fc("0x0","UhHR")
+  $pat="/((_0x)?[a-z0-9_]+)\(\"0x0\"\,\"/ms";
+  if (preg_match($pat,$h,$f)) {
+  $pat   = "/(".$f[1].")\(\"(0x[a-z0-9_]+)\",\s?\"(.*?)\"\)/ms"; //better
+  if (preg_match_all($pat, $h, $p)) {
+    for ($z = 0; $z < count($p[0]); $z++) {
+      $h = str_replace($p[0][$z], '"'.abc($c0[hexdec($p[2][$z])], $p[3][$z]).'"', $h);
+    }
+  }
+  }
+ }
+  preg_match("/eval\(\w+\((\"|\')(\w+)(\"|\')/",$h,$p);
+
+  $dec = rc4($p[2], $rc4);
+  if (preg_match('/((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $dec, $m)) {
   $link=$m[1];
   if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $dec, $s))
   $srt=$s[1];
   } else {
     $link="";
   }
-  echo $link;
+  echo $link."<BR>"."\n";
+  echo $dec;
 ?>
