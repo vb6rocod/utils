@@ -122,13 +122,14 @@ if (strpos($filelink,"videomega.") !== false) {
   $h3 = curl_exec($ch);
   curl_close($ch);
 
+  $out="";
+  if (preg_match("/eval\(function\(p,a,c,k,e,[r|d]?/",$h3)) {
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h3);
-  //echo $out."\n";
+  }
   $out .=$h3;
-  //echo $out;
-  if (preg_match('/((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,\s\[\+\]\(\)]*(\.mp4))/', $out, $m)) {
-  $link=$m[1];
+  if (preg_match('/\/\/.+\.mp4/', $out, $m)) {
+  $link="https:".$m[0];
   if (preg_match_all('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,\)\(\s\[\+\]]*(\.(srt|vtt)))\" srclang=\"\S+\" label=\"(.*?)\"/', $out, $s))
   //print_r ($s);
   $srts=array();

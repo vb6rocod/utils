@@ -32,9 +32,11 @@ if (strpos($filelink,"fastplay.cc") !== false || strpos($filelink,"fastplay.to")
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h2 = curl_exec($ch);
   curl_close($ch);
+  $out="";
+  if (preg_match("/eval\(function\(p,a,c,k,e,[r|d]?/",$h2)) {
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h2);
-  $out .=$h2;
+  }
   if (preg_match_all('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
   $link=$m[1][count($m[1]) -1];
   if (preg_match('/([http|https]?[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $out, $s))

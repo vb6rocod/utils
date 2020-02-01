@@ -30,6 +30,37 @@ function decode_code($code){
         $code
     );
 }
+function concat_num($a) {   // stupid function
+  $a=preg_replace_callback(
+    "/\"\"\s*\+\s*(\-)?\s*([0-9\.]+)/",  // "" + num
+    function ($m) {
+      return '"'.$m[1].$m[2].'"';
+    },
+    $a
+  );
+  $a=preg_replace_callback(
+    "/(\-)?\s*([0-9\.]+)\s*\+\s*\"\"/",  // num + ""
+    function ($m) {
+      return '"'.$m[1].$m[2].'"';
+    },
+    $a
+  );
+  $a=preg_replace_callback(
+    "/(\-)?\s*([0-9\.]+)\s*\+\s*\"(\-)?([0-9\.]+)\"/",  // num + "num"
+    function ($m) {
+      return '"'.$m[1].$m[2].$m[3].$m[4].'"';
+    },
+    $a
+  );
+  $a=preg_replace_callback(
+    "/\"(\-)?([0-9\.]+)\"\s*\+\s*(\-)?\s*([0-9\.]+)/",  // "num" + num
+    function ($m) {
+      return '"'.$m[1].$m[2].$m[3].$m[4].'"';
+    },
+    $a
+  );
+ return $a;
+}
 function abc($a52, $a10)
 {
     global $mod;
@@ -66,7 +97,7 @@ function abc($a52, $a10)
 
 function get_array() {
  global $enc;
- $pat1="(var\s*([a-z0-9_]+)(\=))";
+ $pat1="([var|const]\s*([a-z0-9_]+)(\=))";
  $pat2="(function\s*([a-z0-9_]+)(\(\)\{return))";
  $pat3="\[(\'[a-zA-Z0-9_\=\+\/\|\;\,\!\"\s\(\)\\\]+\'\,?){2,}\]";
  $pat_array="/(".$pat1."|".$pat2.")".$pat3."/ms";
@@ -116,7 +147,7 @@ function replace_func1($c,$first) {
       else
        $rep=$f[0][$z];
       if ($atob)
-       $enc = str_replace($rep, "'".base64_decode($c0[hexdec($f[2][$z])])."'", $enc);
+       $enc = str_replace($rep, "'".base64_decode($c[hexdec($f[2][$z])])."'", $enc);
       else
        $enc = str_replace($rep, "'".$c[hexdec($f[2][$z])]."'", $enc);
      }
@@ -130,6 +161,7 @@ function obfJS() {
  // fix abc function
  global $enc;
  global $mod;
+ global $atob;
  $enc=decode_code($enc);
  if (preg_match("/decodeURIComponent/",$enc)) {
    $t1=explode('decodeURIComponent',$enc);
@@ -169,6 +201,8 @@ function obfJS() {
   }
  $enc=str_replace("'+'","",$enc); // concat string
  $enc=str_replace('"+"',"",$enc); // concat string
+ $enc=preg_replace("/\/\*.*?\*\//","",$enc);  // /* ceva */
+ $enc=concat_num($enc);
  return $enc;
  } else {
   return "";

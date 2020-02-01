@@ -16,19 +16,18 @@
  *
  */
 function youtube($file) {
-function _splice($a,$b) {
-	return  array_slice($a,$b);
-}
-
-function _reverse($a,$b) {
+function reverse($a,$b) {
 	return  array_reverse($a);
 }
 
-function _slice($a,$b) {
+function length($a,$b) {
 	$tS = $a[0];
 	$a[0] = $a[$b % count($a)];
 	$a[$b] = $tS;
 	return  $a;
+}
+function splice($a,$b) {
+	return  array_slice($a,$b);
 }
 if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)) {
   $id = $match[2];
@@ -55,7 +54,7 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
 
 
   $r1=json_decode($parts['args']['player_response'],1);
- if (isset($r1['streamingData']["hlsManifestUrl"])) {
+  if (isset($r1['streamingData']["hlsManifestUrl"])) {
       $url=$r1['streamingData']["hlsManifestUrl"];
       $ua="Mozilla/5.0 (Windows NT 5.1; rv:22.0) Gecko/20100101 Firefox/22.0";
       $ch = curl_init();
@@ -83,6 +82,7 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
     return $r;
   } else {
   $videos=array();
+  //print_r ($r1['streamingData']['formats']);
   if (isset($r1['streamingData']['formats'][0]['url'])) {
   for ($k=0;$k<count($r1['streamingData']['formats']);$k++) {
     $videos[$r1['streamingData']['formats'][$k]['itag']]=$r1['streamingData']['formats'][$k]['url'];
@@ -118,65 +118,34 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  $html = curl_exec($ch);
+  $h = curl_exec($ch);
   curl_close($ch);
-  $html1=str_replace("\n","",$html);
-  preg_match('/([A-Za-z]{2})=function\(a\){a=a\.split\(\"\"\)/',$html1,$m);
-  $sig=$m[1];
-  $find='/\s?'.$sig.'=function\((?P<parameter>[^)]+)\)\s?\{\s?(?P<body>[^}]+)\s?\}/';
-  preg_match($find,$html1,$m1);
-  //print_r ($m1);  //UK=function(a){a=a.split("")
-  //[parameter] = a
-  //[body] = a=a.split("");TK.z6(a,23);TK.p8(a,2);TK.d4(a,55);TK.z6(a,6);return a.join("")
-  //z6:function(a,b){var c=a[0];a[0]=a[b%a.length];  ----> _slice($sA,23)
-  //var TK={p8:function(a,b){a.splice(0,b)} splice($sA,2)
-  //d4:function(a){a.reverse()}}
-  //z6:function(a,b){var c=a[0];a[0]=a[b%a.length];  ---> _slice($sA,6);
-
-  // caut foate functiile de genul XY:function(a,b)
-  preg_match_all("/\w{2}\:function\(\w,\w\)\{[\w\s\=\[\]\=\%\.\;\(\)\,]*\}/",$html1,$m3);
-
-  $a=array(); // funtii gasite $a[XY]= splice etc
-  for ($k=0;$k<count($m3[0]);$k++) {
-    preg_match("/(\w{2})(\:function\(\w,\w\)\{)([\w\s\=\[\]\=\%\.\;\(\)\,]*)\}/",$m3[0][$k],$m4);
-    //print_r ($m4);
-    $a[$m4[1]]=$m4[3];
-  }
-
-  // caut toate functiile de genul XY:function(a)
-  preg_match_all("/\w{2}\:function\(\w\)\{[\;\.\s\w\,\"\:\(\)\{\{]*\}/",$html1,$m2);
-  for ($k=0;$k<count($m2[0]);$k++) {
-     preg_match("/(\w{2})(\:function\(\w\)\{)([\;\.\s\w\,\"\:\(\)\{\{]*)\}/",$m2[0][$k],$m5);
-     $a[$m5[1]]=$m5[3];
-  }
-  $x3 = preg_replace("/\w{2}\./","",$m1["body"]);
-  $f=explode(";",$x3);
-  for ($k=0;$k<count($f);$k++) {
-    if (preg_match("/split/",$f[$k]))
-      $sA = str_split($s);
-    elseif (preg_match("/join/",$f[$k]))
-      $sA = implode($sA);
-    elseif (preg_match("/(\w+)\(\w+,(\d+)/",$f[$k],$r1)) { //AT(a,33)
-       if (!$a[$r1[1]]) //daca nu exista nicio functie..... nu cred ca e cazul
-          $sA = _slice($sA,$r1[2]); //????
-       else {
-         if (preg_match("/splice/",$a[$r1[1]]))
-            $sA = _splice($sA,$r1[2]);
-         elseif (preg_match("/reverse/",$a[$r1[1]]))
-            $sA = _reverse($sA,$r1[2]);
-         elseif (preg_match("/\w%\w\.length/",$a[$r1[1]]))
-            $sA = _slice($sA,$r1[2]);
-       }
-    }
-  }
+  preg_match("/a\=a\.split\(\"\"\);(.*?)return a\.join\(\"\"\)/",$h,$m);
+  $code=$m[1];
+  $pat="/(\w+\.(\w+))\((\w+)\,(\w+)\);/";
+  preg_match_all($pat,$code,$m);
+  $pat1=implode("|", $m[2]);
+  preg_match_all("/(".$pat1.")\:function.*?(splice|length|reverse)/",$h,$f);
+  global $func;   // if this file is included include ("youtube.php");
+  $func = array_combine($f[1], $f[2]);
+  $code=preg_replace_callback(
+    "/(\w+\.(\w+))\((\w+)\,(\w+)\);/",
+    function ($match) {
+     global $func;
+     return "\$sA=".$func[$match[2]]."(\$sA,".$match[4].");";
+    },
+    $code
+  );
+  $sA = str_split($s);
+  eval ($code);
+  $sA = implode($sA);
   $signature = $sA;
   $r=$video."&".$tip."=".$signature;
-}
-} else {
- $r="";
-}
-
-return $r;
+  }
+ } else {
+  $r="";
+ }
+ return $r;
 }
 } else
   return "";

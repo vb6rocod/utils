@@ -454,7 +454,7 @@ function jjdecode($t) {
                                         break; //done
                                     }
                                 }
-
+                                if (!$ch_lotux) $ch_lotux=0;
                                 $out .=chr(intval($ch_str,8) + $ch_lotux);
                                 break; //step out of the while loop
                             }

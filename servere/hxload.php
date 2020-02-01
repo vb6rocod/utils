@@ -90,7 +90,7 @@ function abc($a52, $a10)
   $h = curl_exec($ch);
   curl_close($ch);
   $h=decode_code($h);
-  preg_match("/var (\w+)\s*\=\s*\'([\w\+\\_\/\=]{100,})\'\;/ms",$h,$m); // var hxstring = '8j.....
+  if (preg_match("/var (\w+)\s*\=\s*\'([\w\+\\_\/\=]{100,})\'\;/ms",$h,$m)) { // var hxstring = '8j.....
   $rc4=base64_decode($m[2]);
   // fix abc function
   $t1=explode('decodeURIComponent',$h);
@@ -145,7 +145,10 @@ function abc($a52, $a10)
   preg_match("/eval\(\w+\((\"|\')(\w+)(\"|\')/",$h,$p);
 
   $dec = rc4($p[2], $rc4);
-  if (preg_match('/((http|https)[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $dec, $m)) {
+  } else {
+    $dec=$h;
+  }
+  if (preg_match('/\/\/.+\.mp4/', $dec, $m)) {
   $link=$m[1];
   if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $dec, $s))
   $srt=$s[1];

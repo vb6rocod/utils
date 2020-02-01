@@ -23,27 +23,36 @@ require_once("JavaScriptUnpacker.php");
 $filelink = "https://powvideo.net/o4xa8jywtx07";
 $filelink="https://powvideo.net/0ouzz4i4yvvs";
 if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !== false) {
-    preg_match('/(powvideo|powvideo)\.(net|cc)\/(?:embed-|iframe-|preview-|)([a-z0-9]+)/', $filelink, $m);
+    preg_match('/(powvideo|povvideo)\.(net|cc|co)\/(?:embed-|iframe-|preview-|)([a-z0-9]+)/', $filelink, $m);
     $id       = $m[3];
-    $filelink="https://powvldeo.co/embed-".$id.".html";
-    $ua       = $_SERVER["HTTP_USER_AGENT"];
+    $host=parse_url($filelink)['host'];
+    $filelink="https://".$host."/embed-".$id.".html";
+    $ua = $_SERVER["HTTP_USER_AGENT"];
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $filelink);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+    curl_setopt($ch, CURLOPT_HEADER,1);
+    curl_setopt($ch, CURLOPT_NOBODY,1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    $h = curl_exec($ch);
+    if (preg_match("/Location:\s*(http.+)/",$h,$m))
+      $host=parse_url(trim($m[1]))['host'];
     $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
      'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
      'Accept-Encoding: deflate',
      'Connection: keep-alive',
-     'Referer: https://powvldeo.co/preview-'.$id.'-1280x665.html',
+     'Referer: https://'.$host.'/preview-'.$id.'-1280x665.html',
      'Cookie: ref_url='.urlencode($filelink).'; e_'.$id.'=123456789',
      'Upgrade-Insecure-Requests: 1');
-    $l        = "https://powvldeo.co/iframe-" . $id . "-954x562.html";
-    $ch       = curl_init();
+    $l = "https://".$host."/iframe-" . $id . "-954x562.html";
+
     curl_setopt($ch, CURLOPT_URL, $l);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-    curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    curl_setopt($ch, CURLOPT_NOBODY,0);
     $h = curl_exec($ch);
     curl_close($ch);
 
@@ -56,7 +65,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     if (preg_match('/([\.\d\w\-\.\/\\\:\?\&\#\%\_]*(\.(srt|vtt)))/', $out, $xx)) {
         $srt = $xx[1];
     if (strpos("http", $srt) === false && $srt)
-        $srt = "https://powvideo.net" . $srt;
+        $srt = "https://".$host.$srt;
     }
     $enc=$h;
     $dec = obfJS();
@@ -86,7 +95,8 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
       $val=$m[4][$k];
       $func=str_replace(" ","_",$func);
       $dec=str_replace($orig,"\$".$func."=".$val,$dec).";";
-      $dec=str_replace($rep.")","\$".$func,$dec);
+      $pat="/".preg_quote($rep)."\s*\)"."/";
+      $dec=preg_replace($pat,"\$".$func,$dec);
      }
     }
     if (preg_match("/((r\=)|(r\.splice)(.*?))\';eval/ms",$dec,$m)) {

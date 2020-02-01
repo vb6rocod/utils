@@ -46,96 +46,72 @@ function vv($a157,$a158) {
   }
   return $a162;
 }
-function decode_code($code){
-    return preg_replace_callback(
-        "@\\\(x)?([0-9a-f]{2,3})@",
-        function($m){
-            return chr($m[1]?hexdec($m[2]):octdec($m[2]));
-        },
-        $code
-    );
-}
 
-if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.cloud") !==false) {
+
+if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.") !==false) {
   require_once('AADecoder.php');
+  include ("obfJS.php");
   include ("jj.php");
-  $h=file_get_contents($filelink);
-  if (strpos($h,"Video not found") === false) {
-  $h1=AADecoder::decode($h);
+  $k=0;
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $filelink);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; rv:65.0) Gecko/20100101 Firefox/65.0");
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_ENCODING, "");
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+  while ($k<5) {
+   $h = curl_exec($ch);
+   if (preg_match("/Video not found/",$h)) break;
+   $h=decode_code($h);
+   $h1=AADecoder::decode($h);
+   $pat="/setAttribute\(\'src\', *\'(http.+?mp4)\'\)/";
+   if (preg_match($pat,$h1)) break;
+   $pat1="/setAttribute\(\'src\',\s*vv\(key,\s*atob\(\'(\S+)\'/";
+   if (preg_match($pat1,$h1)) break;
+   sleep(1);
+   $k++;
+  }
+  curl_close($ch);
+  if (strpos($h1,"Video not found") === false) {
   if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h1, $s))
   $srt=$s[1];
   $pat="/setAttribute\(\'src\', *\'(http.+?mp4)\'\)/";
-  $pat1="/setAttribute\(\'src\',\s*vv\(key/";
   if (preg_match($pat, $h1, $m)) {
-  $link=$m[1];
-  } elseif (preg_match($pat1, $h1)) {
-   $h1=decode_code($h1);
-   $pat1="/setAttribute\(\'src\',\s*vv\(key,\s*atob\(\'(\S+)\'/";
-   preg_match($pat1, $h1,$q);
-   $encoded=$q[1];
-   if (preg_match("/(var\s+(_0x[a-z0-9]+))\=\[(\'[a-zA-Z0-9\=\+\/]+\'\,?)+\]/ms", $h1, $m)) {
-        $php_code = str_replace($m[1], "\$c0", $m[0]) . ";";
-        eval($php_code);
-        //print_r ($c0);
-        /* rotate with 0xd0 search (_0x1107,0xd0)) */
-        $pat = "/\(" . $m[2] . "\,(0x[a-z0-9]+)/";
-        if (preg_match($pat, $h, $n)) {
-            $x = hexdec($n[1]);
-            for ($k = 0; $k < $x; $k++) {
-                array_push($c0, array_shift($c0));
-            }
-        }
+    $link=$m[1];
+    if (strpos($link,"http") === false && $link) $link="https:".$link;
+  } else {
+    $pat1="/setAttribute\(\'src\',\s*vv\(key,\s*atob\(\'(\S+)\'/";
+    if (preg_match($pat1, $h1,$q))
+     $encoded=$q[1];
+    else
+     $encoded="";
+    $hash="";
+    $t1=explode("<script>",$h1);
+    $t2=explode("</script",$t1[1]);
+    if ($z1 = jjdecode($t2[0])) {
+     $z1=preg_replace_callback(
+      "/atob\(\'(.*?)\'\)/ms",
+      function ($matches) {
+       return base64_decode($matches[1]);
+      },
+      $z1
+     );
+    preg_match("/(\w{20,})/",$z1,$p);
+    $hash=$p[1];
    }
-   print_r ($c0);
-   echo "<BR>";
-   $t1=explode('<script>',$h1);
-   $t2=explode('</script',$t1[1]);
-   $z=trim($t2[0]);
-   $z1 = jjdecode($z);
-   //echo $z1;
-   if (strpos($z1,"atob") !== false) $z=$z1;
-   $t1=explode("atob('",$z);
-   $t2=explode("'",$t1[1]);
-   $dec=base64_decode($t2[0]);   // 1147|window.bqtk0='r9u1d9g3q7m4z8y7s8o7p3e7';|1903
-   echo $dec."<BR>";
-   $t1=explode("'",$dec);
-   $hash=$t1[1];
-   if (!$hash) {
-   $t1=explode("|",$dec);   //9895|p1y2f5o9s1i5b1k4x7c8a0w7|slxbn|4836
-   $hash= $t1[1];
-   }
-   //echo $hash;
-/*
-var l = c2('0x0');
-var n = c2('0x1');
-var h = 'hgsylgxvxpnfpcytjgtyinridhbavmgehjfv';
-*/
-/*
-var l=_0x2a75('0x0');
-var n=_0x2a75('0x1');
-var h=_0x2a75('0x2');
-*/
-   if (preg_match("/var l=_0x[a-z0-9]+\(\'0x(\d+)\'\)/",$h1,$p)) {
-     $l=$c0[$p[1]];
-   } else {
-     preg_match("/var l=\'(\S+)\'/",$h1,$q);
-     $l=$q[1];
-   }
-   if (preg_match("/var n=_0x[a-z0-9]+\(\'0x(\d+)\'\)/",$h1,$p)) {
-     $n=$c0[$p[1]];
-   } else {
-     preg_match("/var n=\'(\S+)\'/",$h1,$q);
-     $n=$q[1];
-   }
-   if (preg_match("/var h=_0x[a-z0-9]+\(\'0x(\d+)\'\)/",$h1,$p)) {
-     $h=$c0[$p[1]];
-   } else {
-     preg_match("/var h=\'(\S+)\'/",$h1,$q);
-     $h=$q[1];
-   }
-
-   echo $l."<BR>".$n."<BR>".$h."<BR>";
-
+   $t2=explode("</script",$t1[2]);
+   $enc=$t2[0];
+   $dec=obfJS();
+   $h=$l=$n="";
+   if(preg_match("/var\s*h\=\'(\w+)\'/ms",$dec,$m))
+    $h=$m[1];
+   if (preg_match("/var\s*l\=\'(\w+)\'/ms",$dec,$m))
+    $l=$m[1];
+   if (preg_match("/var\s*n\=\'(\w+)\'/ms",$dec,$m))
+    $n=$m[1];
    $test=array();
    for($j = 0x0; $j < strlen($l); $j++) {
      for($k = 0x0; $k < strlen($n); $k++) {
@@ -147,12 +123,10 @@ var h=_0x2a75('0x2');
       $key = $key.$test[$hash[$i].$hash[$i + 1]];
    }
    $link=vv($key,base64_decode($encoded));
-  } else {
-   $link="";
+   if (strpos($link,"http") === false && $link) $link="https:".$link;
   }
-  } else {
-   $link="";
-  }
+  } else
+    $link="";
 }
 echo $link;
 ?>
