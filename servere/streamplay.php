@@ -43,7 +43,7 @@ if (strpos($filelink,"streamplay.") !== false) {
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     $h = curl_exec($ch);
     curl_close($ch);
-    if (preg_match("/Location:\s*(http.+)/",$h,$m))
+    if (preg_match("/location:\s*(http.+)/i",$h,$m))
       $host=parse_url(trim($m[1]))['host'];
     $head=array('Cookie: file_id=13136922; ref_yrp=; ref_kun=1; BJS0=1');
     $l="https://".$host."/player-".$id.".html";

@@ -39,7 +39,7 @@ if (strpos($filelink, "powvideo.") !== false || strpos($filelink, "povvideo.") !
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     $h = curl_exec($ch);
-    if (preg_match("/Location:\s*(http.+)/",$h,$m))
+    if (preg_match("/location:\s*(http.+)/i",$h,$m))
       $host=parse_url(trim($m[1]))['host'];
     $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
      'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
