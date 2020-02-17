@@ -49,7 +49,6 @@ function cf_pass ($url,$cookie) {
  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
- curl_setopt($ch, CURLOPT_SSLVERSION,$ssl_version);
  curl_setopt($ch, CURLINFO_HEADER_OUT, true);
  curl_setopt($ch, CURLOPT_HTTPHEADER,
     array(
@@ -74,6 +73,8 @@ function cf_pass ($url,$cookie) {
     $headers[] = "sec-fetch-user: ?1";
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
    }
+  curl_setopt($ch, CURLOPT_SSLVERSION,$ssl_version);
+  sleep(1);
   $page = curl_exec($ch);
   $info = curl_getinfo($ch);
   }

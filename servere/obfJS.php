@@ -97,17 +97,17 @@ function abc($a52, $a10)
 
 function get_array() {
  global $enc;
- $pat1="([var|const]\s*([a-z0-9_]+)(\=))";
+ $pat1="((var|const)\s*([a-z0-9_]+)(\=))";
  $pat2="(function\s*([a-z0-9_]+)(\(\)\{return))";
  $pat3="\[(\'[a-zA-Z0-9_\=\+\/\|\;\,\!\"\s\(\)\\\]+\'\,?){2,}\]";
  $pat_array="/(".$pat1."|".$pat2.")".$pat3."/ms";
  if (preg_match($pat_array,$enc,$m)) {
   $c=array();
   $x=0;
-  $enc=str_replace($m[0],"",$enc);
+  $enc=str_replace($m[0],$m[1]."[]",$enc);
   $code=str_replace($m[1],"\$c=",$m[0].";");
   eval ($code);
-  $pat = "/\(" . $m[3].$m[6] . "\,([a-z0-9_]+)/";
+  $pat = "/\(" . $m[4].$m[6] . "\,([a-z0-9_]+)/";
   if (preg_match($pat, $enc, $n)) {   // rotate array
     $x = hexdec($n[1]);
     for ($k = 0; $k < $x; $k++) {

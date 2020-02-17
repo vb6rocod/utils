@@ -147,6 +147,24 @@ if (strpos($filelink,"videomega.") !== false) {
   } else {
     $link="";
   }
+  if ($link) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, trim($link));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
+  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+  curl_setopt($ch, CURLOPT_HEADER,1);
+  curl_setopt($ch, CURLOPT_NOBODY,1);
+  $h = curl_exec($ch);
+  curl_close($ch);
+  if (preg_match("/location:\s*(http.+)/i",$h,$m))
+    $link=trim($m[1]);
+  }
 }
 echo $link;
 ?>

@@ -50,9 +50,8 @@ if (strpos($filelink,"jwplayer.flowyourvideo") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h4 = curl_exec($ch);
   curl_close($ch);
-  $t1=explode("Location:",$h4);
-  $t2=explode("\n",$t1[1]);
-  $link=trim($t2[0]);
+  if (preg_match("/Location:\s*(.+)/i",$h4,$m))
+    $link=trim($m[1]);
   }
   parse_str(parse_url($filelink)['query'],$output);
   if (isset($output['subtitles'])) {
@@ -116,9 +115,8 @@ if (strpos($filelink,"flowyourvideo") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h4 = curl_exec($ch);
   curl_close($ch);
-  $t1=explode("Location:",$h4);
-  $t2=explode("\n",$t1[1]);
-  $link=trim($t2[0]);
+  if (preg_match("/Location:\s*(.+)/i",$h4,$m))
+    $link=trim($m[1]);
 }
 echo $link;
 ?>
