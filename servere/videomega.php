@@ -128,22 +128,52 @@ if (strpos($filelink,"videomega.") !== false) {
   $out = $jsu->Unpack($h3);
   }
   $out .=$h3;
-  if (preg_match('/\/\/.+\.mp4/', $out, $m)) {
-  $link="https:".$m[0];
-  if (preg_match_all('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,\)\(\s\[\+\]]*(\.(srt|vtt)))\" srclang=\"\S+\" label=\"(.*?)\"/', $out, $s))
-  //print_r ($s);
+  if (preg_match("/source src\=\"(.*?)\"/",$out,$m)) {
+  $link=$m[1];
+  if (preg_match_all('/([\.\d\w\-\.\=\/\\\:\?\&\#\%\_\,\)\(\s\[\+\]]+(\.(srt|vtt)))\" srclang=\"(\w+)\" label=\"(\w+)\"/', $out, $s))
   $srts=array();
-  if (isset($s[4])) {
-    for ($k=0;$k<count($s[4]);$k++) {
-      $srts[$s[4][$k]] = $s[1][$k];
+  if (isset($s[5])) {
+    for ($k=0;$k<count($s[5]);$k++) {
+      if (strpos($s[1][$k],"empty.srt") === false) $srts[strtolower($s[5][$k])] = $s[1][$k];
     }
   }
-  if (isset($srts["Romanian"]))
-    $srt=$srts["Romanian"];
-  elseif (isset($srts["Romana"]))
-    $srt=$srts["Romana"];
-  elseif (isset($srts["English"]))
-    $srt=$srts["English"];
+  // prevent empty subtitles
+  if (count($srts)>1) {
+  foreach ($srts as $key => $value) {
+  $t1=explode("srt=",$value);
+  if (strpos($t1[1],"videomega") === false) {  // check subtitles
+   $head=array('Accept: */*',
+   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+   'Accept-Encoding: deflate',
+   'Origin: https://'.parse_url($filelink)["host"].'',
+   'Connection: keep-alive',
+   'Referer: '.$filelink.'');
+   $ch = curl_init();
+   curl_setopt($ch, CURLOPT_URL, $t1[1]);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
+   curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; rv:71.0) Gecko/20100101 Firefox/7");
+   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+   $h=curl_exec($ch);
+   curl_close($ch);
+   if(!preg_match('/(\d\d):(\d\d):(\d\d)(\.|,)(\d\d\d) --> (\d\d):(\d\d):(\d\d)(\.|,)(\d\d\d)/', $h))
+    unset ($srts[$key]);
+  }
+  }
+  }
+  if (count($srts)>1) {
+  if (isset($srts["romanian"]))
+    $srt=$srts["romanian"];
+  elseif (isset($srts["romana"]))
+    $srt=$srts["romana"];
+  elseif (isset($srts["english"]))
+    $srt=$srts["english"];
+  } elseif (count($srts)>0) {
+    $srt=$s[1][0];
+  }
   } else {
     $link="";
   }
