@@ -22,7 +22,6 @@ $filelink = "https://www.vidload.net/e/29d045cffe0231a4";
 
 if (strpos($filelink,"vidload.net") !== false) {
   $cookie="videomega.dat"; // very similar
-  require_once("JavaScriptUnpacker.php");
   $filelink=str_replace("/f/","/e/",$filelink);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
@@ -37,39 +36,29 @@ if (strpos($filelink,"vidload.net") !== false) {
   $h=curl_exec($ch);
   curl_close($ch);
   curl_close($ch);
+  if (preg_match_all('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,\)\(\s\[\+\]]*(\.(srt|vtt)))\" srclang=\"\w+\" label=\"(\w+)\"/', $h, $s)) {
+  $srts=array();
+  if (isset($s[4])) {
+    for ($k=0;$k<count($s[4]);$k++) {
+      $srts[strtolower($s[4][$k])] = $s[1][$k];
+    }
+  }
+  if (isset($srts["romanian"]))
+    $srt=$srts["romanian"];
+  elseif (isset($srts["romana"]))
+    $srt=$srts["romana"];
+  elseif (isset($srts["english"]))
+    $srt=$srts["english"];
+  }
+  $t1=explode('token="',$h);
+  $t2=explode('"',$t1[1]);
+  $gone=$t2[0];
+  $t1=explode('crsf="',$h);
+  $t2=explode('"',$t1[1]);
+  $oujda=$t2[0];
 
-  $ids=array();
-  // href="xcxcc" id="ererer"
-  preg_match_all("/href\s*\=\s*[\'|\"](.*?)[\'|\"].*?id\s*\=\s*[\'|\"](\w+)[\'|\"]/ms",$h,$m);
-  for ($k=0;$k<count($m[2]);$k++) {
-   $ids[$m[2][$k]]=$m[1][$k];
-  }
-  // type="hidden" id="5e29af3b6ac6b" value="
-  preg_match_all("/type\=\"hidden\"\s*id=\"(.*?)\"\s*value\=\"(.*?)\"/ms",$h,$m);
-  for ($k=0;$k<count($m[2]);$k++) {
-   $ids[$m[1][$k]]=$m[2][$k];
-  }
-  // bigbangass=document.getElementById("
-  $rep=array();
-  preg_match_all("/(\w+)\s*\=\s*document\.getElementById\([\'\"](\w+)[\'\"]/ms",$h,$m);
-  for ($k=0;$k<count($m[1]);$k++) {
-    $rep[$m[1][$k]]=$ids[$m[2][$k]];
-  }
-  // xhr.send("myreason="+tnaketalikom+"&saveme="+fuckoff)
-  preg_match("/xhr\.send\s*\((.*?)\)/ms",$h,$m);
-  $p=preg_replace("/(\"|\'|\s|\+)/","",$m[1]);
-  parse_str($p,$o);
-  $a=array();
-  foreach($o as $key => $value) {
-    $a[$key]=$rep[$value];
-  }
-  $post=http_build_query($a);
-  //echo $post;
-  preg_match("/streamurl\/[\'|\"]\s*\+\s*(\w+)/ms",$h,$m);
-  $id=$m[1];
-  $str_url=$rep[$id];
-  $l="https://www.vidload.net/streamurl/".$str_url."/";
-  //echo $l;
+  $l="https://www.vidload.net/vid/";
+  $post="gone=".$gone."&oujda=".$oujda;
   $head=array('Accept: */*',
   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
   'Accept-Encoding: deflate',
@@ -90,52 +79,9 @@ if (strpos($filelink,"vidload.net") !== false) {
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  $l = curl_exec($ch);
+  $link = curl_exec($ch);
   curl_close($ch);
-  //echo "\n".$l;
-  $l="https://www.vidload.net".$l;
-  $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-  'Accept-Encoding: deflate',
-  'Connection: keep-alive',
-  'Referer: '.$filelink.'',
-  'Upgrade-Insecure-Requests: 1');
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, trim($l));
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  $h3 = curl_exec($ch);
-  curl_close($ch);
-  //echo $h3;
-  $jsu = new JavaScriptUnpacker();
-  $out = $jsu->Unpack($h3);
-
-  $out .=$h3;
-  if (preg_match('/http.+\.mp4/', $out, $m)) {
-  $link=$m[0];
-  if (preg_match_all('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,\)\(\s\[\+\]]*(\.(srt|vtt)))\" srclang=\"\S+\" label=\"(.*?)\"/', $out, $s))
-  //print_r ($s);
-  $srts=array();
-  if (isset($s[4])) {
-    for ($k=0;$k<count($s[4]);$k++) {
-      $srts[$s[4][$k]] = $s[1][$k];
-    }
-  }
-  if (isset($srts["Romanian"]))
-    $srt=$srts["Romanian"];
-  elseif (isset($srts["Romana"]))
-    $srt=$srts["Romana"];
-  elseif (isset($srts["English"]))
-    $srt=$srts["English"];
-  } else {
-    $link="";
-  }
+  $link=trim($link);
 }
 echo $link;
 ?>
