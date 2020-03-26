@@ -22,6 +22,9 @@ $filelink = "https://embed.mystream.to/pufpln9x8ejh";
 $filelink = "https://embed.mystream.to/edqddehi2hrh";
 $filelink="https://embed.mystream.to/j7mt4olun0cr";
 if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.") !==false) {
+ $pat='@(?://|\.)(my?stream\.(?:la|to|cloud|xyz))/(?:external|watch/)?([0-9a-zA-Z_]+)@';
+ preg_match($pat,$filelink,$i);
+ $filelink="https://embed.mystream.to/".$i[2];
  $h=file_get_contents($filelink);
  if (preg_match("@(\\$\=\~\[\].*?)\<script@si",$h,$u)) {
   if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s)) // not sure
@@ -58,7 +61,7 @@ if (strpos($filelink,"mystream.") !== false || strpos($filelink,"mstream.") !==f
   $js=str_replace("\\","",$js);
   if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $js, $s))   // not sure
   $srt=$s[1];
-  if (preg_match("/http.+\.mp4/",$js,$m))
+  if (preg_match("/http.+\.(mp4|m3u8)/",$js,$m))
     $link=$m[0];
   else
     $link="";
