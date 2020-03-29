@@ -41,9 +41,11 @@ if (strpos($filelink,"mixdrop.co") !== false) {
   if (preg_match("/(\/\/[\w|\.\:\?\&\/\=\_\-]+\.mp4\?[\w|\.\:\?\&\/\=\_\-]+)[\'\"]/",$out,$m)) {
       $link="https:".$m[1];
     if (strpos($link,"http") === false) $link="https:".$link;
-      if (preg_match("/\.sub\s*\=\s*\"(.*?)\"/",$out,$s)) {
-       $srt= $s[1];
-       if (strpos($srt,"http") === false) $srt="https:".$srt;
+      if (preg_match("/\.(remote)?sub\s*\=\s*\"(.*?)\"/",$out,$s)) {
+       $srt= $s[2];
+       $srt= urldecode($s[2]);
+       $srt=str_replace(" ","%20",$srt);
+       if (strpos($srt,"http") === false && $srt) $srt="https:".$srt;
       }
   } else {
     $link="";
