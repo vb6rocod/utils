@@ -49,7 +49,7 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
   $p++;
   }
 
-  $html = str_between($html,'ytplayer.config = ',';ytplayer.load');
+  $html = str_between($html,'ytplayer.config = ',';ytplayer.web_player_context_config');
   $parts = json_decode($html,1);
 
 
