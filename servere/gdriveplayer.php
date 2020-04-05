@@ -52,8 +52,18 @@ function cryptoJsAesDecrypt($passphrase, $jsonString){
   require_once("JavaScriptUnpacker.php");
   $jsu = new JavaScriptUnpacker();
   $h = $jsu->Unpack($h);
+  $t1=explode("null,'",$h);
+  $t2=explode("'",$t1[1]);
+  $js=$t2[0];
+  $keywords = preg_split("/[a-zA-Z]{1,}/",$js);
+  $out="";
+  for ($k=0;$k<count($keywords);$k++) {
+   $out .=chr($keywords[$k]);
+  }
+  $t1=explode('pass = "',$out);
+  $t2=explode('"',$t1[1]);
+  $pass=$t2[0];
   $t1=explode("'",$h);
-  $pass = "alsfheafsjklNIWORNiolNIOWNKLNXakjsfwnBdwjbwfkjbJjkBkjbfejkbefjkfegMKLFWN";
   $x=cryptoJsAesDecrypt($pass,$t1[1]);
   $h1 = $jsu->Unpack($x);
   //echo $h1;
@@ -96,8 +106,8 @@ body {background-color:#000000;}
 </style>
 <style type="text/css">*{margin:0;padding:0}#player{position:absolute;width:100%!important;height:100%!important}.jw-button-color:hover,.jw-toggle,.jw-toggle:hover,.jw-open,.w-progress{color:#008fee!important;}.jw-active-option{background-color:#008fee!important;}.jw-progress{background:#008fee!important;}.jw-skin-seven .jw-toggle.jw-off{color:fff!important}</style>
 <script type="text/javasript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="https://jwpsrv.com/library/AqFhtu2PEeOMGiIACyaB8g.js"></script>
-<script type="text/javascript">jwplayer.key = "9dOyFG96QFb9AWbR+FhhislXHfV1gIhrkaxLYfLydfiYyC0s";</script>
+<script type="text/javascript" src="YOUR_JWPLAYER.js"></script>
+<script type="text/javascript">jwplayer.key = "YOUR_KEY";</script>
 </head>
 <body>
 <div id="player"></div>
