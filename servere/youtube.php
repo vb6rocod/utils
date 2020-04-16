@@ -110,6 +110,7 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
   $s=$output["s"];
   $tip=$output["sp"];
   $l = "https://s.ytimg.com".$parts['assets']['js'];
+  $l = "https://www.youtube.com".$parts['assets']['js'];
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $l);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

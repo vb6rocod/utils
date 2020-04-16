@@ -31,7 +31,7 @@ if (strpos($filelink,"dood.watch") !== false) {
    return $a;
   }
   $filelink=str_replace("/f/","/e",$filelink);
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
+  $ua     =   $_SERVER['HTTP_USER_AGENT'];
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
