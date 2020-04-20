@@ -82,6 +82,7 @@ function cf_pass ($url,$cookie) {
   $t1=explode('action="',$page);
   $t2=explode('"',$t1[1]);
   $requestLink="https://".$host.$t2[0];
+  $requestLink = str_replace("&amp;","&",$requestLink);
   curl_setopt($ch, CURLOPT_URL, $requestLink);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
