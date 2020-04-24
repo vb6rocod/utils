@@ -17,6 +17,7 @@
 *
 * get cf_clearance cookie
 * usage $html=cf_pass($url,$cookie);
+* not perfect.......
 */
 
 function cf_pass ($url,$cookie) {
@@ -44,50 +45,55 @@ function cf_pass ($url,$cookie) {
   $ssl_version=7;
  else
   $ssl_version=0;
- $ch = curl_init($url);
+ $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+  'Accept-Encoding: deflate',
+  'Upgrade-Insecure-Requests: 1',
+  'Connection: keep-alive');
+ $ch = curl_init();
+ curl_setopt($ch, CURLOPT_URL, $url);
  curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+ curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
  curl_setopt($ch, CURLINFO_HEADER_OUT, true);
- curl_setopt($ch, CURLOPT_HTTPHEADER,
-    array(
-        "Upgrade-Insecure-Requests: 1",
-        "User-Agent: ".$ua."",
-        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
-        "Accept-Language: en-US,en;q=0.9"
-    ));
  $page = curl_exec($ch);
  $info = curl_getinfo($ch);
+
  if ($info['http_code'] === 403 && strpos($page, "captcha")) {
   curl_close($ch);
  } elseif ($info['http_code'] === 503) {
-  $scheme = parse_url($info['url'], PHP_URL_SCHEME);
   $host   = parse_url($info['url'], PHP_URL_HOST);
-  if ($scheme === "https") {
-   curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, implode(":", $DEFAULT_CIPHERS));
-   if (strpos($info['request_header'], 'HTTP/2') !== false) {
-    $headers   = array_filter(array_slice(preg_split("/\r\n|\n/", $info['request_header']), 1));
-    $headers[] = "sec-fetch-mode: navigate";
-    $headers[] = "sec-fetch-site: none";
-    $headers[] = "sec-fetch-user: ?1";
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-   }
-  curl_setopt($ch, CURLOPT_SSLVERSION,$ssl_version);
-  sleep(1);
-  $page = curl_exec($ch);
-  $info = curl_getinfo($ch);
-  }
   $post= getClearanceLink($page,$url);
   $t1=explode('action="',$page);
   $t2=explode('"',$t1[1]);
   $requestLink="https://".$host.$t2[0];
   $requestLink = str_replace("&amp;","&",$requestLink);
+  $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+   'Accept-Encoding: deflate',
+   'Content-Type: application/x-www-form-urlencoded',
+   'Content-Length: '.strlen($post).'',
+   'Origin: https://'.$host.'',
+   'Connection: keep-alive',
+   'Referer: '.$url.'');
   curl_setopt($ch, CURLOPT_URL, $requestLink);
+  curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
+  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+  curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, implode(":", $DEFAULT_CIPHERS));
+  curl_setopt($ch, CURLOPT_SSLVERSION,$ssl_version);
+  curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+  curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-  $page    = curl_exec($ch);
+  $page = curl_exec($ch);
   curl_close($ch);
  } else {
   curl_close($ch);
@@ -112,8 +118,14 @@ return $js_code;
 function getClearanceLink($content, $url) {
   sleep (5);
   $params = array();
+  $params1 = array();
+  $params2 = array();
   if (preg_match_all('/name="(\w+)" value="(.*?)"/', $content, $matches))
-   $params=array_combine($matches[1], $matches[2]);
+   $params1=array_combine($matches[1], $matches[2]);
+  //print_r ($matches);
+  if (preg_match_all('/value="(\w+)" id="(.*?)"/',$content,$matches1))
+   $params2=array_combine($matches1[2], $matches1[1]);
+  $params = array_merge($params1,$params2);
   $uri = parse_url($url);
   $host=$uri["host"];
   $result="";
@@ -174,6 +186,9 @@ function getClearanceLink($content, $url) {
       $params['jschl_answer'] += strlen($uri['host'])  ;
     }
   }
-  return http_build_query($params);
+  $q= http_build_query($params);
+  $q=str_replace("jschl-vc","jschl_vc",$q);
+  //echo $q;
+  return $q;
 }
 ?>
