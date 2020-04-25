@@ -16,91 +16,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 * get cf_clearance cookie
-* usage $html=cf_pass($url,$cookie);
+* usage $html=cf_pass($url,$cookie) or $html=cf_pass($url,$cookie,true) ; // optional force ua to Ie6
+* if force ua to IE6 use this ua for future calls!
 * not perfect.......
 */
 
-function cf_pass ($url,$cookie) {
- $ua = $_SERVER['HTTP_USER_AGENT'];
- $DEFAULT_CIPHERS =array(
-            "ECDHE+AESGCM",
-            "ECDHE+CHACHA20",
-            "DHE+AESGCM",
-            "DHE+CHACHA20",
-            "ECDH+AESGCM",
-            "DH+AESGCM",
-            "ECDH+AES",
-            "DH+AES",
-            "RSA+AESGCM",
-            "RSA+AES",
-            "!aNULL",
-            "!eNULL",
-            "!MD5",
-            "!DSS",
-            "!ECDHE+SHA",
-            "!AES128-SHA",
-            "!DHE"
-        );
- if (defined('CURL_SSLVERSION_TLSv1_3'))
-  $ssl_version=7;
- else
-  $ssl_version=0;
- $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-  'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-  'Accept-Encoding: deflate',
-  'Upgrade-Insecure-Requests: 1',
-  'Connection: keep-alive');
- $ch = curl_init();
- curl_setopt($ch, CURLOPT_URL, $url);
- curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
- curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
- curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
- curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
- curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
- curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
- curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
- curl_setopt($ch, CURLINFO_HEADER_OUT, true);
- $page = curl_exec($ch);
- $info = curl_getinfo($ch);
-
- if ($info['http_code'] === 403 && strpos($page, "captcha")) {
-  curl_close($ch);
- } elseif ($info['http_code'] === 503) {
-  $host   = parse_url($info['url'], PHP_URL_HOST);
-  $post= getClearanceLink($page,$url);
-  $t1=explode('action="',$page);
-  $t2=explode('"',$t1[1]);
-  $requestLink="https://".$host.$t2[0];
-  $requestLink = str_replace("&amp;","&",$requestLink);
-  $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-   'Accept-Encoding: deflate',
-   'Content-Type: application/x-www-form-urlencoded',
-   'Content-Length: '.strlen($post).'',
-   'Origin: https://'.$host.'',
-   'Connection: keep-alive',
-   'Referer: '.$url.'');
-  curl_setopt($ch, CURLOPT_URL, $requestLink);
-  curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
-  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-  curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, implode(":", $DEFAULT_CIPHERS));
-  curl_setopt($ch, CURLOPT_SSLVERSION,$ssl_version);
-  curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-  curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
-  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-  $page = curl_exec($ch);
-  curl_close($ch);
- } else {
-  curl_close($ch);
- }
- return $page;
-}
-function rr($js_code) {
+ function rr($js_code) {
                 $js_code = str_replace(array(
                     ")+(",
                     "![]",
@@ -112,10 +33,10 @@ function rr($js_code) {
                     "(!0)",
                     "(0)"
                 ), $js_code);
-return $js_code;
-}
+  return $js_code;
+ }
 
-function getClearanceLink($content, $url) {
+ function getClearanceLink($content, $url) {
   sleep (5);
   $params = array();
   $params1 = array();
@@ -160,35 +81,94 @@ function getClearanceLink($content, $url) {
    }
   }
   $params['jschl_answer'] = round($result, 10);
-  } else {
-    $cf_script_start_pos    = strpos($content, 's,t,o,p,b,r,e,a,k,i,n,g,f,');
-    $cf_script_end_pos      = strpos($content, '</script>', $cf_script_start_pos);
-    $cf_script              = substr($content, $cf_script_start_pos, $cf_script_end_pos-$cf_script_start_pos);
-    preg_match_all('/:[\/!\[\]+()]+|[-*+\/]?=[\/!\[\]+()]+/', $cf_script, $matches);
-    $php_code = "";
-    foreach ($matches[0] as $js_code) {
-      // [] causes "invalid operator" errors; convert to integer equivalents
-      $js_code = str_replace(array(
-                    ")+(",
-                    "![]",
-                    "!+[]",
-                    "[]"
-                ), array(
-                    ").(",
-                    "(!1)",
-                    "(!0)",
-                    "(0)"
-                ), $js_code);
-      $php_code .= '$params[\'jschl_answer\']' . ($js_code[0] == ':' ? '=' . substr($js_code, 1) : $js_code) . ';';
-      eval($php_code);
-      $params['jschl_answer'] = round($params['jschl_answer'], 10);
-      $uri = parse_url($url);
-      $params['jschl_answer'] += strlen($uri['host'])  ;
-    }
-  }
   $q= http_build_query($params);
   $q=str_replace("jschl-vc","jschl_vc",$q);
-  //echo $q;
   return $q;
+  } else {
+    return false;
+  }
+ }
+function cf_pass ($l,$cookie,$force_ua=false) {
+ $DEFAULT_CIPHERS =array(
+            "ECDHE+AESGCM",
+            "ECDHE+CHACHA20",
+            "DHE+AESGCM",
+            "DHE+CHACHA20",
+            "ECDH+AESGCM",
+            "DH+AESGCM",
+            "ECDH+AES",
+            "DH+AES",
+            "RSA+AESGCM",
+            "RSA+AES",
+            "!aNULL",
+            "!eNULL",
+            "!MD5",
+            "!DSS",
+            "!ECDHE+SHA",
+            "!AES128-SHA",
+            "!DHE"
+        );
+ if (defined('CURL_SSLVERSION_TLSv1_3'))
+  $ssl_version=7;
+ else
+  $ssl_version=0;
+
+ $ua = $_SERVER['HTTP_USER_AGENT'];
+ $ua="IE6";
+ $host=parse_url($l)['host'];
+ $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+ 'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+ 'Accept-Encoding: deflate',
+ 'Upgrade-Insecure-Requests: 1',
+ 'Connection: keep-alive');
+ $ch = curl_init();
+ curl_setopt($ch, CURLOPT_URL, $l);
+ curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
+ curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
+ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+ if ($force_ua) curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+ curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+ curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+ $page = curl_exec($ch);
+ $info = curl_getinfo($ch);
+ if ($info['http_code'] === 403 && strpos($page, "captcha")) {
+  curl_close($ch);
+ } elseif ($info['http_code'] === 503) {
+  $headers   = array_filter(array_slice(preg_split("/\r\n|\n/", $info['request_header']), 1));
+  $headers[] = "sec-fetch-mode: navigate";
+  $headers[] = "sec-fetch-site: none";
+  $headers[] = "sec-fetch-user: ?1";
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, implode(":", $DEFAULT_CIPHERS));
+  curl_setopt($ch, CURLOPT_SSLVERSION,$ssl_version);
+  $page = curl_exec($ch);
+  $k=0;
+  while (!($post= getClearanceLink($page,$l)) && $k<5) {
+   sleep(1);
+   $page = curl_exec($ch);
+   $post= getClearanceLink($page,$l);
+   $k++;
+  }
+  $t1=explode('action="',$page);
+  $t2=explode('"',$t1[1]);
+  $requestLink="https://".$host.$t2[0];
+  $headers[]='Content-Type: application/x-www-form-urlencoded';
+  $headers[]='Content-Length: '.strlen($post);
+  $headers[]='Origin: https://'.$host;
+  $headers[]= 'Referer: https://'.$host;
+  curl_setopt($ch, CURLOPT_URL, $requestLink);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($ch, CURLOPT_HEADER,0);
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+  $page = curl_exec($ch);
+  curl_close($ch);
+ } else {
+  curl_close($ch);
+ }
+ return $page;
 }
 ?>
