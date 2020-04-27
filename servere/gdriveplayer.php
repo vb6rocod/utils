@@ -44,11 +44,41 @@ function cryptoJsAesDecrypt($passphrase, $jsonString){
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch, CURLOPT_HEADER,1);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
   curl_close($ch);
+  $t1=explode('__cf_bm=',$h);
+  $t2=explode(';',$t1[1]);
+  $cf_bm=$t2[0]; // optional
+  $links=array();
+  /* Get all links, first is from database.gdriveplayer.me , rest from other sites */
+  if (preg_match_all("/li onclick\=\"frame\(\'(.*?)\'/",$h,$m)) {
+   for ($k=0;$k<count($m[1]);$k++) {
+    $links[] = (strpos($m[1][$k],"http") === false) ? "https:".$m[1][$k] : $m[1][$k];
+   }
+  }
+  print_r ($links);
+  /* Resolve database.gdriveplayer.me */
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $links[0]);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch, CURLOPT_HEADER,1);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+  $h = curl_exec($ch);
+  curl_close($ch);
+  $t1=explode('document.cookie = "access" + "=" + "',$h);
+  $t2=explode('"',$t1[1]);
+  $access=$t2[0];
+  $t1=explode('document.cookie = "redir" + "=" + "',$h);
+  $t2=explode('"',$t1[1]);
+  $redir=$t2[0];
+
   require_once("JavaScriptUnpacker.php");
   $jsu = new JavaScriptUnpacker();
   $h = $jsu->Unpack($h);
@@ -66,57 +96,44 @@ function cryptoJsAesDecrypt($passphrase, $jsonString){
   $t1=explode("'",$h);
   $x=cryptoJsAesDecrypt($pass,$t1[1]);
   $h1 = $jsu->Unpack($x);
-  //echo $h1;
-  $links=array();
+  /* get database.gdriveplayer.me links */
+  $links_gd=array();
   $subs=array();
   /* GET LINKS */
   preg_match_all("/file\":\"([\w\/\=\.\?\:\%\&\+\_\-]+)\"\,\"label\":\"(\w+)\"\,\"type\":\"(\w+)\"/msi",$h1,$m);
   if (isset($m[1])) {
-   $links=$m[1];
-   //echo 'LINKS:<BR>';
-   for ($k=0;$k<count($m[1]);$k++) {
-    //echo '<a href="'.$m[1][$k].'" target="_blank">'.$m[2][$k].' ('.$m[3][$k].')</a> == ';
-   }
+   $links_gd=array($m[2],$m[1]);
   }
   /* GET SUBTITLES */
   preg_match_all("/file\":\"([\w\/\=\.\?\:\%\&\+\_\-]+)\"\,\"kind\":\"(\w+)\"\,\"label\":\"(\w+)\"/msi",$h1,$s);
   if (isset($s[1])) {
-   $subs=$s[1];
-   //echo '<BR>Captions:<BR>';
-   for ($k=0;$k<count($s[1]);$k++) {
-    //echo '<a href="'.$s[1][$k].'" target="_blank">'.$s[3][$k].'</a> == ';
-   }
+   $subs=array($s[3],$s[1]);
   }
-/* TEST */
-$t1=explode('var host2',$h1);
-$h=$t1[0];
-echo '
-<!doctype html>
-<HTML>
-<HEAD>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TEST</title>
-<style type="text/css">
-body {
-margin: 0px auto;
-overflow:hidden;
-}
-body {background-color:#000000;}
-</style>
-<style type="text/css">*{margin:0;padding:0}#player{position:absolute;width:100%!important;height:100%!important}.jw-button-color:hover,.jw-toggle,.jw-toggle:hover,.jw-open,.w-progress{color:#008fee!important;}.jw-active-option{background-color:#008fee!important;}.jw-progress{background:#008fee!important;}.jw-skin-seven .jw-toggle.jw-off{color:fff!important}</style>
-<script type="text/javasript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="YOUR_JWPLAYER.js"></script>
-<script type="text/javascript">jwplayer.key = "YOUR_KEY";</script>
-</head>
-<body>
-<div id="player"></div>
 
-<script type="text/javascript">
-';
-echo $h."\n";
-echo ' </script>
-</body>
-</html>
-';
+  print_r ($links_gd);
+  print_r ($subs);
+  /* links https://redirector.gdriveplayer.me/drive/index.php?id=xxxx can't be played */
+  /* need to resolve this.... each */
+  /* resolve first.... */
+  $l=$links_gd[1][0];
+  $head=array('Accept: video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5',
+   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+   'Connection: keep-alive',
+   'Referer: '.$filelink.'',
+   'Cookie: access='.$access.'; redir='.$redir.';');
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $l);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,0); // set to "1" if you want final link....
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+  curl_setopt($ch, CURLOPT_HEADER,1);
+  curl_setopt($ch, CURLOPT_NOBODY,1);
+  $h = curl_exec($ch);
+  curl_close($ch);
+  if (preg_match_all("/location:\s*(http.+)/i",$h,$m))
+    $movie=trim($m[1][count($m[1])-1]); // https://redirector.googlevideo.com/videoplayback.......
+  echo $movie;
 ?>

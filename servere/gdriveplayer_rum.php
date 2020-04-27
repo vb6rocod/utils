@@ -38,7 +38,7 @@ $sez="";
 $ep="";
 /* prepare */
 $imdbid=str_replace("tt","",$imdb);
-$ua_opensuptitles="TemporaryUserAgent";
+$ua_opensuptitles="TemporaryUserAgent"; // now you must set user and pass in LogIn
 $max_download=10; // how many subtitles to display
 $lang_search="rum,eng"; // language to search subtitles
 function get_value($q, $string) {
@@ -66,85 +66,14 @@ function generateResponse($request) {
   curl_close($ch);
   return $response;
 }
-function cryptoJsAesDecrypt($passphrase, $jsonString){
-    $jsondata = json_decode($jsonString, true);
-    try {
-        $salt = hex2bin($jsondata["s"]);
-        $iv  = hex2bin($jsondata["iv"]);
-    } catch(Exception $e) { return null; }
-    $ct = base64_decode($jsondata["ct"]);
-    $concatedPassphrase = $passphrase.$salt;
-    $md5 = array();
-    $md5[0] = md5($concatedPassphrase, true);
-    $result = $md5[0];
-    for ($i = 1; $i < 3; $i++) {
-        $md5[$i] = md5($md5[$i - 1].$concatedPassphrase, true);
-        $result .= $md5[$i];
-    }
-    $key = substr($result, 0, 32);
-    $data = openssl_decrypt($ct, 'aes-256-cbc', $key, true, $iv);
-    return json_decode($data, true);
-}
-  $ua = $_SERVER['HTTP_USER_AGENT'];
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $filelink);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
-  $h = curl_exec($ch);
-  curl_close($ch);
-
-  require_once("JavaScriptUnpacker.php");
-  $jsu = new JavaScriptUnpacker();
-  $h = $jsu->Unpack($h);
-  $t1=explode("null,'",$h);
-  $t2=explode("'",$t1[1]);
-  $js=$t2[0];
-  $keywords = preg_split("/[a-zA-Z]{1,}/",$js);
-  $out="";
-  for ($k=0;$k<count($keywords);$k++) {
-   $out .=chr($keywords[$k]);
-  }
-  $t1=explode('pass = "',$out);
-  $t2=explode('"',$t1[1]);
-  $pass=$t2[0];
-  $t1=explode("'",$h);
-  $x=cryptoJsAesDecrypt($pass,$t1[1]);
-  $h1 = $jsu->Unpack($x);
-  //echo $h1;
-  $links=array();
-  $subs=array();
-  /* GET LINKS */
-  preg_match_all("/file\":\"([\w\/\=\.\?\:\%\&\+\_\-]+)\"\,\"label\":\"(\w+)\"\,\"type\":\"(\w+)\"/msi",$h1,$m);
-  if (isset($m[1])) {
-   $links=$m[1];
-   //echo 'LINKS:<BR>';
-   for ($k=0;$k<count($m[1]);$k++) {
-    //echo '<a href="'.$m[1][$k].'" target="_blank">'.$m[2][$k].' ('.$m[3][$k].')</a> == ';
-   }
-  }
-  /* GET SUBTITLES */
-  preg_match_all("/file\":\"([\w\/\=\.\?\:\%\&\+\_\-]+)\"\,\"kind\":\"(\w+)\"\,\"label\":\"(\w+)\"/msi",$h1,$s);
-  if (isset($s[1])) {
-   $subs=$s[1];
-   //echo '<BR>Captions:<BR>';
-   for ($k=0;$k<count($s[1]);$k++) {
-    //echo '<a href="'.$s[1][$k].'" target="_blank">'.$s[3][$k].'</a> == ';
-   }
-  }
-  $t1=explode("image:'",$h1);
-  $t2=explode("'",$t1[1]);
-  $image=$t2[0];
-  $t1=explode("title:'",$h1);
-  $t2=explode("'",$t1[1]);
-  $title=$t2[0];
+  /* use gdriveplayer.php to get links and subtitles */
+  /* use other file to generate playable links! ex myfile.php?file=xxxxx */
+  /* $links --> links */
   $sources="sources: ["."\n";
-  for ($k=0;$k<count($m[1]);$k++) {
+  for ($k=0;$k<count($links);$k++) {
     $sources .="{"."\n";
-    $sources .='"file": "'.$m[1][$k].'",'."\n";
-    $sources .='"label": "'.$m[2][$k].'",'."\n";
+    $sources .='"file": "'.$links[$k]['file'].'",'."\n";
+    $sources .='"label": "'.$links[$k]['label'].'",'."\n";
     if ($k==0) $sources .='"default": "true",'."\n";
     $sources .='"type": "mp4"'."\n";
     $sources .='},'."\n";
@@ -160,12 +89,12 @@ $request="<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
 <params>
  <param>
   <value>
-   <string></string>
+   <string>user</string>
   </value>
  </param>
  <param>
   <value>
-   <string></string>
+   <string>pass</string>
   </value>
  </param>
  <param>
