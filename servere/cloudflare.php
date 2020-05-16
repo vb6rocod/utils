@@ -37,6 +37,7 @@
  }
 
  function getClearanceLink($content, $url) {
+  $content=preg_replace("/\<\!\-\-.+\-\-\>/","",$content);
   sleep (5);
   $params = array();
   $params1 = array();
@@ -50,11 +51,9 @@
   $uri = parse_url($url);
   $host=$uri["host"];
   $result="";
-  if (preg_match("/id\=\"cf\-dn/",$content)) {
-  $t1=explode('id="cf-dn',$content);
-  $t2=explode(">",$t1[1]);
-  $t3=explode("<",$t2[1]);
-  eval("\$cf=".rr($t3[0]).";");
+  if (preg_match("/k\s*\=\s*\'([a-zA-Z0-9_]+)\'/",$content,$n)) {
+  $cf="0";
+  $z=0;
   preg_match("/f\,\s?([a-zA-Z0-9]+)\=\{\"([a-zA-Z0-9]+)\"\:\s?([\/\[\]\!\+\*\-\(\)\s]+)\}/",$content,$m);
   eval("\$result=".rr($m[3]).";");
   $pat="/".$m[1]."\.".$m[2]."(.*)+\;/";
@@ -78,6 +77,14 @@
      $line = str_replace($m[1].".".$m[2],"\$result ",rr($t[$k])).";";
      eval($line);
     }
+   } elseif (substr($t[$k], 0, 2)=="k+") {
+     $line=str_replace("k+","\$z+",rr($t[$k])).";";
+     eval ($line);
+     $find=$n[1].$z;
+     $a1=explode('div id="'.$find.'">',$content);
+     $a2=explode('<',$a1[1]);
+     $line="\$cf=".rr($a2[0]).";";
+     eval ($line);
    }
   }
   $params['jschl_answer'] = round($result, 10);
@@ -131,6 +138,8 @@ function cf_pass ($l,$cookie,$force_ua=false) {
  curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+ curl_setopt($ch, CURLOPT_TIMEOUT, 25);
  curl_setopt($ch, CURLINFO_HEADER_OUT, true);
  $page = curl_exec($ch);
  $info = curl_getinfo($ch);

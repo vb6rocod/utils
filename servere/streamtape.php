@@ -1,5 +1,5 @@
 <?php
- /* resolve movcloud.net
+ /* resolve streamtape
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,33 +19,31 @@
  * $link --> video_link
  */
 
-$filelink="https://movcloud.net/embed/ns-9qmdfjZfB";
-if (strpos($filelink,"movcloud.net") !==false) {
-  if (preg_match("/\/embed\/([a-zA-Z0-9_\-]+)/",$filelink,$m)) {
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $filelink, $s))
-  $srt=$s[1];
-   $id=$m[1];
-   $l="https://api.movcloud.net/stream/".$id;
-   $head=array('User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:75.0) Gecko/20100101 Firefox/75.0',
-   'Accept: application/json',
-   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-   'Accept-Encoding: deflate',
-   'Content-Type: application/json',
-   'Origin: https://movcloud.net');
+$filelink="https://streamtape.com/e/Jq2V9jmvyrT9Ja";
+if (strpos($filelink,"streamtape.com") !== false) {
+  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $l);
+  curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_ENCODING, "");
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h = curl_exec($ch);
   curl_close($ch);
-  $r=json_decode($h,1);
-  $link=$r['data']['sources'][0]['file'];
-  if (strpos($link,"http") !== false && $flash <> "flash")  // $flash="jwplayer"
-   $link=$link."|Origin=".urlencode("https://movcloud.net");
-  }
+
+  if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
+  $srt="https:".$s[1];
+
+  $t1=explode('div id="videolink',$h);
+  $t2=explode(">",$t1[1]);
+  $t3=explode("<",$t2[1]);
+  if (strpos($t3[0],"http") === false)
+  $link="https:".$t3[0];
+  else
+  $link=$t3[0];
 }
 echo $link;
 ?>
