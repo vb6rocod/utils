@@ -33,10 +33,14 @@ if (strpos($filelink,"clipwatching") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h = curl_exec($ch);
   curl_close($ch);
+  if (preg_match("/eval\(function\(p,a,c,k,e,[r|d]?/", $h)) {
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h);
   $out .=$h;
-  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\/v\.mp4))/', $out, $m))
+  } else {
+   $out=$h;
+  }
+  if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\/(v\.mp4|master\.m3u8)))/', $out, $m))
    $link=$m[1];
   else
    $link="";

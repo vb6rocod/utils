@@ -19,7 +19,8 @@
  * $link --> video_link
  */
 
-$filelink="https://gounlimited.to/wnqeewv1o4q5/HEARTLAND_101r.mkv";
+$filelink="https://gounlimited.to/embed-6k22mwunr6jd.html";
+$filelink="https://gounlimited.to/embed-a6zcwe7gm93k.html";
 if (strpos($filelink,"gounlimited.to") !== false) {
   require_once("JavaScriptUnpacker.php");
   $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
@@ -33,12 +34,15 @@ if (strpos($filelink,"gounlimited.to") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h2 = curl_exec($ch);
   curl_close($ch);
+  if (preg_match("/eval\(function\(p,a,c,k,e,[r|d]?/", $h2)) {
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h2);
-
+  } else {
+  $out=$h2;
+  }
   if (preg_match('/[file:"]([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.mp4))/', $out, $m)) {
     $link=$m[1];
-    $link=str_replace("https","http",$link);
+    // $link=str_replace("https","http",$link);
   } else
     $link="";
   if (preg_match('/([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h2.$out, $m))
