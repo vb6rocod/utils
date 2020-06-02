@@ -38,7 +38,7 @@
 
  function getClearanceLink($content, $url) {
   $content=preg_replace("/\<\!\-\-.+\-\-\>/","",$content);
-  sleep (5);
+  //sleep (5);
   $params = array();
   $params1 = array();
   $params2 = array();
@@ -156,11 +156,12 @@ function cf_pass ($l,$cookie,$force_ua=false) {
   $page = curl_exec($ch);
   $k=0;
   while (!($post= getClearanceLink($page,$l)) && $k<5) {
-   sleep(1);
+   //sleep(1);
    $page = curl_exec($ch);
    $post= getClearanceLink($page,$l);
    $k++;
   }
+  sleep (5);
   $t1=explode('action="',$page);
   $t2=explode('"',$t1[1]);
   $requestLink="https://".$host.$t2[0];
