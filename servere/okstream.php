@@ -1,5 +1,5 @@
 <?php
- /* resolve evoload.io
+ /* resolve okstream
  * Copyright (c) 2019 vb6rocod
  *
  *
@@ -19,60 +19,56 @@
  * $link --> video_link
  */
 
-$filelink="https://evoload.io/e/wEZkuDhnkURe5j";
-if (strpos($filelink,"evoload.io") !== false) {
+$filelink="https://www.okstream.cc/e/6d7198848112/tt0396652.mp4";
+if (strpos($filelink,"okstream.cc") !== false) {
+  // https://www.okstream.cc/e/6d7198848112/tt0396652.mp4?c1_file=https://serialeonline.to/subtitrarifilme/tt0396652.vtt&c1_label=Romana
   $filelink=str_replace("/f/","/e/",$filelink);
-  include ("rec.php");
-  $cookie= __DIR__ ."\evoload.dat";
   $ua = $_SERVER['HTTP_USER_AGENT'];
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_USERAGENT, $ua);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
-  curl_setopt($ch, CURLOPT_COOKIEJAR,$cookie);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h = curl_exec($ch);
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
-    $srt="https:".$s[1];
-  if (preg_match("/_csrf\:/",$h)) {
-  $t1=explode("code:'",$h);
-  $t2=explode("'",$t1[1]);
-  $code=$t2[0];
-  $t1=explode("_csrf:'",$h);
-  $t2=explode("'",$t1[1]);
-  $csrf=$t2[0];
-  $key="6Ldv2fYUAAAAALstHex35R1aDDYakYO85jt0ot-c";
-  $co="aHR0cHM6Ly9ldm9sb2FkLmlvOjQ0Mw..";
-  $loc="https://evoload.io";
-  $token=rec($key,$co,"",$loc);
-  $l="https://evoload.io/EvoSecure";
-  $post='{"token":"'.$token.'","code":"'.$code.'","_csrf":"'.$csrf.'"}';
-  $xsrf="";
-  $head=array('Accept: application/json, text/plain, */*',
+  $srt="https:".$s[1];
+  $t1=explode('var keys="',$h);
+  $t2=explode('"',$t1[1]);
+  $morocco=$t2[0];
+  $t1=explode('var protection="',$h);
+  $t2=explode('"',$t1[1]);
+  $mycountry=$t2[0];
+  $l="https://www.okstream.cc/request/";
+  $post="morocco=".$morocco."&mycountry=".$mycountry;
+  $head=array('Accept: */*',
    'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
    'Accept-Encoding: deflate',
-   'Content-Type: application/json;charset=utf-8',
-   'X-XSRF-TOKEN: '.$xsrf.'',
+   'Content-Type: application/x-www-form-urlencoded',
    'Content-Length: '.strlen($post).'',
-   'Origin: https://evoload.io',
+   'Origin: https://www.okstream.cc',
    'Connection: keep-alive',
    'Referer: '.$filelink);
+  $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $l);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
   curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
   curl_setopt ($ch, CURLOPT_POST, 1);
   curl_setopt ($ch, CURLOPT_POSTFIELDS, $post);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h = curl_exec($ch);
-  curl_close($ch);
-  $r=json_decode($h,1);
-  if (isset($r['src']))
-   $link=$r['src'];
-  } else {
-   $link="";
-  }
+  if (strpos($h,"http") === false)
+    $link="https://www.okstream.cc".trim($h);
+  else
+    $link=trim($h);
+  if ($link && $flash <> "flash")
+   $link=$link."|Referer=".urlencode("https://www.okstream.cc");
 }
 echo $link;
 ?>
