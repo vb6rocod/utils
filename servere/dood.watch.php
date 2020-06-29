@@ -20,7 +20,7 @@
  */
 
 $filelink="https://dood.watch/e/gd93oog2e3vq?c1_file=https://serialeonline.to/subtitrarifilme/tt4619908.vtt&c1_label=Romana";
-$filelink="https://dood.to/e/kkw9v93qg9c964qyaf9r33fx6cnm7ybu";
+$filelink="https://dood.to/e/kkw9v93qg9c964qyaf9r33fx6cnm7ybu";  // dead
 if (strpos($filelink,"dood.") !== false) {
   function makePlay() {
    $a="";
@@ -34,7 +34,7 @@ if (strpos($filelink,"dood.") !== false) {
   $filelink=str_replace("/f/","/e",$filelink);
   include("rec.php");
   $host=parse_url($filelink)['host'];
-  $token=rec('6LeBZ_QUAAAAAFRlK-3AKsVsAhMsXme1mO_NBKpc','aHR0cDovL2Rvb2QudG86ODA.','pass_md5','https://'.$host);
+  //$token=rec('6LeBZ_QUAAAAAFRlK-3AKsVsAhMsXme1mO_NBKpc','aHR0cDovL2Rvb2QudG86ODA.','pass_md5','https://'.$host);
   $ua     =   $_SERVER['HTTP_USER_AGENT'];
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
@@ -50,9 +50,13 @@ if (strpos($filelink,"dood.") !== false) {
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
   $srt="https:".$s[1];
   if (preg_match("/pass_md5/",$h)) {
+  $t1=explode('token=',$h);
+  $t2=explode('&',$t1[1]);
+  $tok=$t2[0];
   $t1=explode("$.get('",$h);
   $t2=explode("'",$t1[1]);
-  $l="https://".$host.$t2[0].$token;
+  //$l="https://".$host.$t2[0].$token;
+  $l="https://".$host.$t2[0];
   $head=array('Accept: */*',
   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
   'Accept-Encoding: deflate',
@@ -73,7 +77,7 @@ if (strpos($filelink,"dood.") !== false) {
   $h1 = curl_exec($ch);
   curl_close($ch);
   if (preg_match("/http/",$h1))
-   $link=$h1;
+   $link=$h1."?token=".$tok."&expiry=".(time()*1000);
   else
    $link="";
   } else {

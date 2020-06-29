@@ -47,6 +47,9 @@ if (strpos($filelink,"easyload.io") !== false) {
   }
   if (strpos($out,"http") !== false)
     $link=$out;
+  if ($link && strpos($link,".m3u8") === false)   // for subtitles
+    $link=$link."/v.mp4";
+  if ($flash <> "flash" && $link) $link =$link."|Referer=".urlencode("https://".$host);
   if (isset ($y['subtitles'][0]['src']))   // ???????  not sure...
     $srt = $y['subtitles'][0]['src'];
 }
