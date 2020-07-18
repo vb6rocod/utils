@@ -21,7 +21,8 @@
 
 $filelink="https://dood.watch/e/gd93oog2e3vq?c1_file=https://serialeonline.to/subtitrarifilme/tt4619908.vtt&c1_label=Romana";
 $filelink="https://dood.to/e/kkw9v93qg9c964qyaf9r33fx6cnm7ybu";  // dead
-if (strpos($filelink,"dood.") !== false) {
+//https://www.doodstream.com/d/sot4bb1da0rq
+if (preg_match("/dood(stream)?\./",$filelink)) {
   function makePlay() {
    $a="";
    $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -32,6 +33,7 @@ if (strpos($filelink,"dood.") !== false) {
    return $a;
   }
   $filelink=str_replace("/f/","/e",$filelink);
+  $filelink=str_replace("/d/","/e/",$filelink);
   include("rec.php");
   $host=parse_url($filelink)['host'];
   //$token=rec('6LeBZ_QUAAAAAFRlK-3AKsVsAhMsXme1mO_NBKpc','aHR0cDovL2Rvb2QudG86ODA.','pass_md5','https://'.$host);
@@ -42,11 +44,15 @@ if (strpos($filelink,"dood.") !== false) {
   curl_setopt($ch, CURLOPT_USERAGENT, $ua);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
   curl_setopt($ch, CURLOPT_ENCODING, "");
+  curl_setopt($ch, CURLOPT_HEADER,1);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h = curl_exec($ch);
   curl_close($ch);
+  if (preg_match_all("/location\:\s+(http.+)/i",$h,$m)) {
+    $host=parse_url(trim($m[1][count($m[1])-1]))['host'];
+  }
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
   $srt="https:".$s[1];
   if (preg_match("/pass_md5/",$h)) {

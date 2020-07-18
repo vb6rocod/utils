@@ -34,6 +34,13 @@ if (strpos($filelink,"mixdrop.co") !== false) {
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h3 = curl_exec($ch);
+  if (preg_match("/window\.location/",$h3)) {
+  $t1=explode('window.location = "',$h3);
+  $t2=explode('"',$t1[1]);
+  $l="https://mixdrop.to".$t2[0];
+  curl_setopt($ch, CURLOPT_URL, $l);
+  $h3 = curl_exec($ch);
+  }
   curl_close($ch);
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h3);
