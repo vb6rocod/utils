@@ -92,6 +92,11 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
     $t1=explode("url=",$r1['streamingData']['formats'][$k]['cipher']);
     $videos[$r1['streamingData']['formats'][$k]['itag']]=urldecode($t1[1])."&".$t1[0];
   }
+  } else if (isset($r1['streamingData']['formats'][0]['signatureCipher'])) {
+  for ($k=0;$k<count($r1['streamingData']['formats']);$k++) {
+    $t1=explode("url=",$r1['streamingData']['formats'][$k]['signatureCipher']);
+    $videos[$r1['streamingData']['formats'][$k]['itag']]=urldecode($t1[1])."&".$t1[0];
+  }
   }
   if (isset($videos['37']))
     $video= $videos['37'];
