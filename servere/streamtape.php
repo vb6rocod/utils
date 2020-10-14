@@ -40,10 +40,13 @@ if (strpos($filelink,"streamtape.com") !== false) {
   $t1=explode('div id="videolink',$h);
   $t2=explode(">",$t1[1]);
   $t3=explode("<",$t2[1]);
+  $t1=explode('document.getElementById("videolink").innerHTML = "',$h);
+  $t3=explode('"',$t1[1]);
   if (strpos($t3[0],"http") === false)
   $link="https:".$t3[0];
   else
   $link=$t3[0];
+  if ($link) $link=$link."&stream=1";
 }
 echo $link;
 ?>

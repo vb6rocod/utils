@@ -28,11 +28,15 @@ if (strpos($filelink,"dailymotion.com") !==false) {
   $ua="Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0";
 
   $h=file_get_contents($filelink);
+  /*
   $t1=explode('var config = {',$h);
   $t2=explode('window.playerV5',$t1[1]);
   $h1=trim("{".$t2[0]);
   $h1=substr($h1, 0, -1);
-
+  */
+  $t1=explode('window.__PLAYER_CONFIG__ = {',$h);
+  $t2=explode(';</script',$t1[1]);
+  $h1=trim("{".$t2[0]);
   $r=json_decode($h1,1)['metadata']['qualities'];
   if (isset($r['auto'][0]['url'])) {
   $l_main=$r['auto'][0]['url'];
