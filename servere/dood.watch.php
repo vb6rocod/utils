@@ -59,10 +59,9 @@ if (preg_match("/dood(stream)?\./",$filelink)) {
   $t1=explode('token=',$h);
   $t2=explode('&',$t1[1]);
   $tok=$t2[0];
-  $t1=explode("$.get('",$h);
+  $t1=explode("pass_md5/",$h);
   $t2=explode("'",$t1[1]);
-  //$l="https://".$host.$t2[0].$token;
-  $l="https://".$host.$t2[0];
+  $l="https://".$host."/pass_md5/".$t2[0];
   $head=array('Accept: */*',
   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
   'Accept-Encoding: deflate',
