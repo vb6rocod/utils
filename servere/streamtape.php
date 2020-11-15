@@ -37,16 +37,9 @@ if (strpos($filelink,"streamtape.com") !== false) {
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
   $srt="https:".$s[1];
 
-  $t1=explode('div id="videolink',$h);
-  $t2=explode(">",$t1[1]);
-  $t3=explode("<",$t2[1]);
-  $t1=explode('document.getElementById("videolink").innerHTML = "',$h);
-  $t3=explode('"',$t1[1]);
-  if (strpos($t3[0],"http") === false)
-  $link="https:".$t3[0];
-  else
-  $link=$t3[0];
-  if ($link) $link=$link."&stream=1";
+  if (preg_match_all("/streamtape\.com\/get\_video\?id\=([\w\_\&\=\-]+)[\'|\"|\<]/",$h,$m)) {
+   $link="https://streamtape.com/get_video?id=".$m[1][count($m[1])-1]."&stream=1";
+  }
 }
 echo $link;
 ?>
