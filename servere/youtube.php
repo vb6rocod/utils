@@ -52,11 +52,19 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
   $t2=explode('"',$t1[1]);
   $js_url="https://www.youtube.com".$t2[0];
   
-  $html = str_between($html,'ytplayer.config = ',';ytplayer.web_player_context_config');
-  $parts = json_decode($html,1);
+  $parts=array();
+  $r1=array();
+  if (strpos($html,"ytplayer.config =") !== false) {
+    $html = str_between($html,'ytplayer.config = ',';ytplayer.web_player_context_config');
+    $parts = json_decode($html,1);
+    $r1=json_decode($parts['args']['player_response'],1);
+  } else {
+    $html=trim(str_between($html,'var ytInitialPlayerResponse = ','}}}};'))."}}}}";
+    $parts = json_decode($html,1);
+    $r1=$parts;
+  }
 
 
-  $r1=json_decode($parts['args']['player_response'],1);
   if (isset($r1['streamingData']["hlsManifestUrl"])) {
       $url=$r1['streamingData']["hlsManifestUrl"];
       $ch = curl_init();
