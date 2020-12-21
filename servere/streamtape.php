@@ -21,19 +21,31 @@
 
 $filelink="https://streamtape.com/e/Jq2V9jmvyrT9Ja";
 if (strpos($filelink,"streamtape.com") !== false) {
-  $ua="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $filelink);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_ENCODING, "");
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  $h = curl_exec($ch);
-  curl_close($ch);
-
+ $cookie=$base_cookie."streamtape.dat";
+ $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+ 'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+ 'Accept-Encoding: deflate',
+ 'Referer: https://serialeonline.io/episoade/magnum-p-i-sezonul-3-episodul-2/',
+ 'Connection: keep-alive',
+ 'Upgrade-Insecure-Requests: 1');
+ $ch = curl_init();
+ curl_setopt($ch, CURLOPT_URL, $filelink);
+ curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
+ curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
+ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+ curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+ curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
+ curl_setopt($ch, CURLOPT_ENCODING, "");
+ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+ curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+ curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+ $h = curl_exec($ch);
+ $info = curl_getinfo($ch);
+ curl_close($ch);
+ $h=str_replace("\\","",$h);
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
   $srt="https:".$s[1];
 
