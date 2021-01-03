@@ -46,6 +46,7 @@ if (strpos($filelink,"streamtape.com") !== false) {
  $info = curl_getinfo($ch);
  curl_close($ch);
  $h=str_replace("\\","",$h);
+ $h=preg_replace("/(\'|\")\s*\+\s*(\'|\")/","",$h);
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
   $srt="https:".$s[1];
 
