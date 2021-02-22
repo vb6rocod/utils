@@ -47,6 +47,7 @@ if (strpos($filelink,"userload.") !== false) {
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch, CURLOPT_REFERER,"https://userload.co");
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -56,6 +57,8 @@ if (strpos($filelink,"userload.") !== false) {
 
   if (preg_match("/kind\=\"captions\" src\=\"(.*?)\"/si",$h,$s))
     $srt=$s[1];
+  $t1=explode('div class="video-div"',$h);
+  $h=$t1[1];
   $jsu = new JavaScriptUnpacker();
   $out = $jsu->Unpack($h);
   $pat="/var\s*".$morocco1."\s*\=\"(\w+)/";
