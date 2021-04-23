@@ -43,8 +43,67 @@ if (strpos($filelink,"playtube.") !== false) {
     $srt="https:".$s[1];
   if (preg_match('/(file|src)\:\s*\"([http|https][\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(mp4|m3u8)))/', $out.$h, $m))
   $link=trim($m[2]);
-  if ($link && $flash <> "flash")
-   $link=$link."|Referer=".urlencode("https://playtube.ws");
+  
+  $link=""; // new version
+  $t1=explode("file_code:'",$out);
+  $t2=explode("'",$t1[1]);
+  $file_code=$t2[0];
+  $t1=explode("hash:'",$out);
+  $t2=explode("'",$t1[1]);
+  $hash=$t2[0];
+  $l="https://playtube.ws/dl";
+  $post="op=playerddl&file_code=".$file_code."&hash=".$hash;
+  $head=array('Accept: */*',
+   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+   'Accept-Encoding: deflate',
+   'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+   'X-Requested-With: XMLHttpRequest',
+   'Content-Length: '.strlen($post),
+   'Origin: https://playtube.ws',
+   'Connection: keep-alive',
+   'Referer: https://playtube.ws');
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $l);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
+  curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
+  curl_setopt($ch, CURLOPT_ENCODING,"");
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+  $w=0;
+  do {
+   $h = curl_exec($ch);
+   $y=json_decode($h,1);
+   $w++;
+  } while (isset($y[0]['error']) && $w < 10);
+  curl_close($ch);
+  $link=$y[0]['file'];
+  if ($link) {
+   $out=str_replace("'",'"',$out);
+   $t1=explode('var chars=',$out);
+   $t2=explode(';',$t1[1]);
+   $e="\$chars='".$t2[0]."';";
+   eval ($e);
+   $t1=explode('replace(/[',$out);
+   $t2=explode("]",$t1[1]);
+   $rep="/[".$t2[0]."]/";
+   $x=json_decode($chars,1);
+   $link=preg_replace_callback(
+    $rep,
+    function ($m) {
+      global $x;
+      return $x[$m[0]];
+    },
+    $link
+   );
+   if ($link && $flash <> "flash")
+    $link=$link."|Referer=".urlencode("https://playtube.ws")."&Origin=".urlencode("https://playtube.ws");
+   }
 }
 echo $link;
 ?>
