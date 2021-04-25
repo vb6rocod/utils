@@ -59,7 +59,7 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
     $parts = json_decode($html,1);
     $r1=json_decode($parts['args']['player_response'],1);
   } else {
-    $html=trim(str_between($html,'var ytInitialPlayerResponse = ','}}}};'))."}}}}";
+    $html=trim(str_between($html,'var ytInitialPlayerResponse = ',';var meta'))."";
     $parts = json_decode($html,1);
     $r1=$parts;
   }
