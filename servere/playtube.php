@@ -22,11 +22,13 @@
 $filelink="https://playtube.ws/embed-bfv0sg6wivjr/tt14039028.mp4.html?c1_file=https://seriale-online.net/subtitrarifilme/tt14039028.vtt&c1_label=Romana";
 if (strpos($filelink,"playtube.") !== false) {
    require_once("JavaScriptUnpacker.php");
+   include ("tear.php");
    $ua="Mozilla/5.0 (Windows NT 10.0; rv:81.0) Gecko/20100101 Firefox/81.0";
    $ch = curl_init();
    curl_setopt($ch, CURLOPT_URL, $filelink);
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
    curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+   curl_setopt($ch, CURLOPT_REFERER,"https://seriale-online.net/");
    curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -83,6 +85,7 @@ if (strpos($filelink,"playtube.") !== false) {
   } while (isset($y[0]['error']) && $w < 10);
   curl_close($ch);
   $link=$y[0]['file'];
+  $seed=$y[0]['seed'];
   if ($link) {
    $out=str_replace("'",'"',$out);
    $t1=explode('var chars=',$out);
@@ -93,6 +96,15 @@ if (strpos($filelink,"playtube.") !== false) {
    $t2=explode("]",$t1[1]);
    $rep="/[".$t2[0]."]/";
    $x=json_decode($chars,1);
+   $seed=preg_replace_callback(
+    $rep,
+    function ($m) {
+      global $x;
+      return $x[$m[0]];
+    },
+    $seed
+   );
+   $link = decrypt($link,$seed);
    $link=preg_replace_callback(
     $rep,
     function ($m) {
@@ -101,6 +113,7 @@ if (strpos($filelink,"playtube.") !== false) {
     },
     $link
    );
+   $flash="flash";
    if ($link && $flash <> "flash")
     $link=$link."|Referer=".urlencode("https://playtube.ws")."&Origin=".urlencode("https://playtube.ws");
    }

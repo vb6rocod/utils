@@ -1,0 +1,720 @@
+<script>
+function ascii2binary(a0) {
+  return bytes2blocks(ascii2bytes(a0));
+}
+
+function ascii2bytes(_0xfa8f3) {
+    var a1 = ("5|3|2|4|6|0|1|7")['split']('|'),
+        a2 = 0;
+    while(!![]) {
+        switch(a1[a2++]) {
+            case '0':
+                var a3;
+                continue;
+            case '1':
+                while(true) {
+                    var a4 = ("7|13|14|10|15|1|11|2|12|17|6|3|8|4|0|5|18|16|9")['split']('|'),
+                        a5 = 0;
+                    while(!![]) {
+                        switch(a4[a5++]) {
+                            case '0':
+                                if((a3 == 0) && (a6 == (a7 - 1))) return a8;
+                                continue;
+                            case '1':
+                                a9++;
+                                continue;
+                            case '2':
+                                if((a3 == 0) && (a6 == (a7 - 1))) return a8;
+                                continue;
+                            case '3':
+                                a8[a9] |= (a3 >>> 2);
+                                continue;
+                            case '4':
+                                a3 = (3 & a3);
+                                continue;
+                            case '5':
+                                a8[a9] = (a3 << 6);
+                                continue;
+                            case '6':
+                                a3 = a2b[_0xfa8f3['charAt'](a6)];
+                                continue;
+                            case '7':
+                                while(true) {
+                                    a6++;
+                                    if(a6 >= a7) return a8;
+                                    if(a2b[_0xfa8f3['charAt'](a6)] != null) break;
+                                }
+                                continue;
+                            case '8':
+                                a9++;
+                                continue;
+                            case '9':
+                                a9++;
+                                continue;
+                            case '10':
+                                a3 = a2b[_0xfa8f3['charAt'](a6)];
+                                continue;
+                            case '11':
+                                a3 = (15 & a3);
+                                continue;
+                            case '12':
+                                a8[a9] = (a3 << 4);
+                                continue;
+                            case '13':
+                                a8[a9] = a2b[_0xfa8f3['charAt'](a6)] << 2;
+                                continue;
+                            case '14':
+                                while(true) {
+                                    a6++;
+                                    if(a6 >= a7) return a8;
+                                    if(a2b[_0xfa8f3['charAt'](a6)] != null) break;
+
+                                }
+                                continue;
+                            case '15':
+                                a8[a9] |= (a3 >>> 4);
+                                continue;
+                            case '16':
+                                a8[a9] |= a2b[_0xfa8f3['charAt'](a6)];
+                                continue;
+                            case '17':
+                                while(true) {
+                                    a6++;
+                                    if(a6 >= a7) return a8;
+                                    if(a2b[_0xfa8f3['charAt'](a6)] != null) break;
+                                }
+                                continue;
+                            case '18':
+                                while(true) {
+                                    a6++;
+                                    if(a6 >= a7) return a8;
+                                    if(a2b[_0xfa8f3['charAt'](a6)] != null) break;
+
+                                }
+                                continue;
+                        }
+                        break;
+                    }
+                }
+                continue;
+            case '2':
+                var a7 = _0xfa8f3['length'];
+                continue;
+            case '3':
+                var a6 = -(1);
+                continue;
+            case '4':
+                var a9 = 0;
+                continue;
+            case '5':
+                continue;
+            case '6':
+                var a8 = new Array();
+                continue;
+            case '7':
+                return a8;
+
+        }
+        break;
+    }
+}
+
+function bytes2str(a10) {
+    var a11 = ("0|3|2|5|1|4")['split']('|'),
+        a12 = 0;
+    while(!![]) {
+        switch(a11[a12++]) {
+            case '0':
+                continue;
+            case '1':
+                while(true) {
+                    if(a13 >= a14) break;
+                    a15 += String.fromCharCode(255 & a10[a13]),
+                        a13++;
+
+                }
+                continue;
+            case '2':
+                var a14 = a10['length'];
+                continue;
+            case '3':
+                var a13 = 0;
+                continue;
+            case '4':
+                return a15;
+            case '5':
+                var a15 = '';
+                continue;
+        }
+        break;
+    }
+}
+
+function str2bytes(a16) {
+    var a17 = ("1|2|0|5|4|3")['split']('|'),
+        a18 = 0;
+    while(!![]) {
+        switch(a17[a18++]) {
+            case '0':
+                var a19 = a16['length'];
+                continue;
+            case '1':
+
+                continue;
+            case '2':
+                var a20 = 0;
+                continue;
+            case '3':
+                return a21;
+            case '4':
+                while(true) {
+
+                    if(a20 >= a19) break;
+                    a21[a20] = a16['charCodeAt'](a20);
+                    a20++;
+                }
+                continue;
+            case '5':
+                var a21 = new Array();
+                continue;
+        }
+        break;
+    }
+}
+
+function bytes2blocks(a22) {
+    var a23 = ("3|4|1|0|5|2")['split']('|'),
+        a24 = 0;
+    while(!![]) {
+        switch(a23[a24++]) {
+            case '0':
+                var a25 = a22['length'];
+                continue;
+            case '1':
+                var a26 = 0;
+                continue;
+            case '2':
+                return a27;
+            case '3':
+                var a27 = new Array();
+                continue;
+            case '4':
+                var a28 = 0;
+                continue;
+            case '5':
+                while(true) {
+
+                    a27[a28] = (255 & a22[a26]) << 24,
+                        a26++;
+                    if(a26 >= a25) break;
+                    a27[a28] |= (255 & a22[a26]) << 16,
+                        a26++;
+                    if(a26 >= a25) break;
+                    a27[a28] |= (255 & a22[a26]) << 8,
+                        a26++;
+                    if(a26 >= a25) break;
+                    a27[a28] |= (255 & a22[a26]),
+                        a26++;
+                    if(a26 >= a25) break;
+                    a28++;
+
+                }
+                continue;
+        }
+        break;
+    }
+}
+
+function blocks2bytes(a29) {
+    var a30 = ("3|5|2|0|1|4")['split']('|'),
+        a31 = 0;
+    while(!![]) {
+        switch(a30[a31++]) {
+            case '0':
+                var a32 = a29['length'];
+                continue;
+            case '1':
+                while(true) {
+                    if(a33 >= a32) break;
+                    a34[a35] = 255 & (a29[a33] >>> 24),
+                        a35++,
+                        a34[a35] = 255 & (a29[a33] >>> 16),
+                        a35++,
+                        a34[a35] = 255 & (a29[a33] >>> 8),
+                        a35++,
+                        a34[a35] = 255 & a29[a33],
+                        a35++,
+                        a33++;
+
+                }
+                continue;
+            case '2':
+                var a33 = 0;
+                continue;
+            case '3':
+                var a34 = new Array();
+                continue;
+            case '4':
+                return a34;
+            case '5':
+                var a35 = 0;
+                continue;
+        }
+        break;
+    }
+}
+
+function digest_pad(a36) {
+    var a37 = ("4|7|9|6|10|11|2|1|0|5|8|3")['split']('|'),
+        a38 = 0;
+    while(!![]) {
+        switch(a37[a38++]) {
+            case '0':
+                while(a39 < a40) {
+                    a41[a42] = a36[a39],
+                        a42++,
+                        a39++;
+                }
+                continue;
+            case '1':
+                a42++;
+                continue;
+            case '2':
+                a41[a42] = a43;
+                continue;
+            case '3':
+                return a41;
+            case '4':
+                var a44 = 'return /" + this + "/';
+                continue;
+            case '5':
+                var a45 = a43;
+                continue;
+            case '6':
+                var a39 = 0;
+                continue;
+            case '7':
+                var a41 = new Array();
+                continue;
+            case '8':
+                while(a45 > 0) {
+                    a41[a42] = 0,
+                        a42++,
+                        a45--;
+                }
+                continue;
+            case '9':
+                var a42 = 0;
+                continue;
+            case '10':
+                var a40 = a36['length'];
+                continue;
+            case '11':
+                var a43 = (15 - (a40 % 16));
+                continue;
+        }
+        break;
+    }
+}
+
+
+function unpad(a46) {
+    var a47 = ("1|5|6|2|8|0|7|3|4")['split']('|'),
+        a48 = 0;
+    while(!![]) {
+        switch(a47[a48++]) {
+            case '0':
+                a49++;
+                continue;
+            case '1':
+
+                continue;
+            case '2':
+                var a50 = 0;
+                continue;
+            case '3':
+                while(a49 < a51) {
+                    a52[a50] = a46[a49],
+                        a50++,
+                        a49++;
+                }
+                continue;
+            case '4':
+                return a52;
+            case '5':
+                var a49 = 0;
+                continue;
+            case '6':
+                var a52 = new Array();
+                continue;
+            case '7':
+                var a51 = (a46['length'] - a53);
+                continue;
+            case '8':
+                var a53 = (7 & a46[a49]);
+                continue;
+        }
+        break;
+    }
+}
+
+
+function asciidigest(a54) {
+    return binary2ascii(binarydigest(a54));
+}
+
+
+function binarydigest(a55, a56) {
+    var a57 = ("8|17|19|4|20|24|5|7|3|9|21|14|16|10|0|2|13|18|15|22|23|11|6|1|12")['split']('|'),
+        a58 = 0;
+
+    while(!![]) {
+        switch(a57[a58++]) {
+            case '0':
+                var a59 = new Array();
+                continue;
+            case '1':
+                a60[3] = a61[1];
+                continue;
+            case '2':
+                a59 = bytes2blocks(digest_pad(str2bytes(a55)));
+                continue;
+            case '3':
+                a62[1] = 1650680933;
+                continue;
+            case '4':
+                a63[1] = 1650680933;
+                continue;
+            case '5':
+                var a62 = new Array();
+                continue;
+            case '6':
+                a60[2] = a61[0];
+                continue;
+            case '7':
+                a62[0] = 1633837924;
+                continue;
+            case '8':
+                continue;
+            case '9':
+                var a61 = new Array();
+                continue;
+            case '10':
+                var a64;
+                continue;
+            case '11':
+                a60[1] = a62[1];
+                continue;
+            case '12':
+                return a60;
+            case '13':
+                var a65 = 0;
+                continue;
+            case '14':
+                var a66 = new Array();
+                continue;
+            case '15':
+                while(true) {
+                    if(a65 >= a67) break;
+                    a66[0] = a59[a65],
+                        a65++,
+                        a66[1] = a59[a65],
+                        a65++,
+                        a68[0] = a59[a65],
+                        a65++,
+                        a68[1] = a59[a65],
+                        a65++,
+                        a62 = tea_code(xor_blocks(a66, a62), a63),
+                        a61 = tea_code(xor_blocks(a68, a61), a63),
+                        a64 = a62[0],
+                        a62[0] = a62[1],
+                        a62[1] = a61[0],
+                        a61[0] = a61[1],
+                        a61[1] = a64;
+                }
+
+                continue;
+            case '16':
+                var a68 = new Array();
+                continue;
+            case '17':
+                var a63 = new Array();
+                continue;
+            case '18':
+                var a67 = a59['length'];
+                continue;
+            case '19':
+                a63[0] = 1633837924;
+                continue;
+            case '20':
+                a63[2] = 1667523942;
+                continue;
+            case '21':
+                a61 = a62;
+                continue;
+            case '22':
+                var a60 = new Array();
+                continue;
+            case '23':
+                a60[0] = a62[0];
+                continue;
+            case '24':
+                a63[3] = 1684366951;
+                continue;
+        }
+        break;
+    }
+}
+
+function decrypt(data_file, data_seed) {
+    var new_data_seed = new Array();
+    new_data_seed = binarydigest(data_seed);
+    if(!data_file) return '';
+    var new_data_file = new Array();
+    new_data_file = ascii2binary(data_file);
+
+    var a69 = 0,
+        a70 = new_data_file['length'],
+        a71 = new Array();
+    a71[0] = 1633837924,
+        a71[1] = 1650680933;
+    var a72 = new Array(),
+        a73 = new Array(),
+        a74 = new Array(),
+        a75 = 0;
+    while(true) {
+        if(a69 >= a70) break;
+        a73[0] = new_data_file[a69],
+            a69++,
+            a73[1] = new_data_file[a69],
+            a69++,
+            a72 = xor_blocks(a71, tea_decode(a73, new_data_seed)),
+            a74[a75] = a72[0],
+            a75++,
+            a74[a75] = a72[1],
+            a75++,
+            a71[0] = a73[0],
+            a71[1] = a73[1];
+    }
+    return bytes2str(unpad(blocks2bytes(a74)));
+}
+
+function xor_blocks(a76, a77) {
+    var a78 = new Array();
+    return a78[0] = a76[0] ^ a77[0],
+        a78[1] = a76[1] ^ a77[1],
+        a78;
+}
+
+function tea_code(a79, a80) {
+    var a81 = ("5|8|0|7|6|9|1|3|4|2")['split']('|'),
+        a82 = 0;
+    while(!![]) {
+        switch(a81[a82++]) {
+            case '0':
+                var a83 = a79[1];
+                continue;
+            case '1':
+                var a84 = new Array();
+                continue;
+            case '2':
+                return a84;
+            case '3':
+                a84[0] = a85;
+                continue;
+            case '4':
+                a84[1] = a83;
+                continue;
+            case '5':
+                continue;
+            case '6':
+                var a86 = 32;
+                continue;
+            case '7':
+                var a87 = 0;
+                continue;
+            case '8':
+                var a85 = a79[0];
+                continue;
+            case '9':
+                while(a86-- > 0) {
+                    var a88 = ("5|3|4|2|0|1")['split']('|'),
+                        a89 = 0;
+                    while(!![]) {
+                        switch(a88[a89++]) {
+                            case '0':
+                                a83 += ((((a85 << 4) ^ (a85 >>> 5)) + a85) ^ (a87 + a80[((a87 >>> 11) & 3)]));
+                                continue;
+                            case '1':
+                                a83 = (a83 | 0);
+                                continue;
+                            case '2':
+                                a87 = (a87 | 0);
+                                continue;
+                            case '3':
+                                a85 = (a85 | 0);
+                                continue;
+                            case '4':
+                                a87 -= 1640531527;
+                                continue;
+                            case '5':
+                                a85 += ((((a83 << 4) ^ (a83 >>> 5)) + a83) ^ (a87 + a80[(a87 & 3)]));
+                                continue;
+                        }
+                        break;
+                    }
+                }
+                continue;
+        }
+        break;
+    }
+}
+
+function tea_decode(a90, a91) {
+    var a92 = ("5|1|8|7|6|9|3|0|2|4")['split']('|'),
+        a93 = 0;
+    while(!![]) {
+        switch(a92[a93++]) {
+            case '0':
+                a94[0] = a95;
+                continue;
+            case '1':
+                var a96 = a90[1];
+                continue;
+            case '2':
+                a94[1] = a96;
+                continue;
+            case '3':
+                var a94 = new Array();
+                continue;
+            case '4':
+                return a94;
+            case '5':
+                var a95 = a90[0];
+                continue;
+            case '6':
+                a97 = -(957401312);
+                continue;
+            case '7':
+                var a98 = 32;
+                continue;
+            case '8':
+                var a97 = 0;
+                continue;
+            case '9':
+                while(a98-- > 0) {
+                    var a99 = ("3|4|5|1|2|0")['split']('|'),
+                        a100 = 0;
+                    while(!![]) {
+                        switch(a99[a100++]) {
+                            case '0':
+                                a95 = (a95 | 0);
+                                continue;
+                            case '1':
+                                a97 = (a97 | 0);
+                                continue;
+                            case '2':
+                                a95 -= ((((a96 << 4) ^ (a96 >>> 5)) + a96) ^ (a97 + a91[(a97 & 3)]));
+                                continue;
+                            case '3':
+                                a96 -= ((((a95 << 4) ^ (a95 >>> 5)) + a95) ^ (a97 + a91[((a97 >>> 11) & 3)]));
+                                continue;
+                            case '4':
+                                a96 = (a96 | 0);
+                                continue;
+                            case '5':
+                                a97 += 1640531527;
+                                continue;
+                        }
+                        break;
+                    }
+                }
+                continue;
+        }
+        break;
+    }
+}
+
+a2b = new Array(),
+    a2b['A'] = 0,
+    a2b['B'] = 1,
+    a2b['C'] = 2,
+    a2b['D'] = 3,
+    a2b['E'] = 4,
+    a2b['F'] = 5,
+    a2b['G'] = 6,
+    a2b['H'] = 7,
+    a2b['I'] = 8,
+    a2b['J'] = 9,
+    a2b['K'] = 10,
+    a2b['L'] = 11,
+    a2b['M'] = 12,
+    a2b['N'] = 13,
+    a2b['O'] = 14,
+    a2b['P'] = 15,
+    a2b['Q'] = 16,
+    a2b['R'] = 17,
+    a2b['S'] = 18,
+    a2b['T'] = 19,
+    a2b['U'] = 20,
+    a2b['V'] = 21,
+    a2b['W'] = 22,
+    a2b['X'] = 23,
+    a2b['Y'] = 24,
+    a2b['Z'] = 25,
+    a2b['a'] = 26,
+    a2b['b'] = 27,
+    a2b['c'] = 28,
+    a2b['d'] = 29,
+    a2b['e'] = 30,
+    a2b['f'] = 31,
+    a2b['g'] = 32,
+    a2b['h'] = 33,
+    a2b['i'] = 34,
+    a2b['j'] = 35,
+    a2b['k'] = 36,
+    a2b['l'] = 37,
+    a2b['m'] = 38,
+    a2b['n'] = 39,
+    a2b['o'] = 40,
+    a2b['p'] = 41,
+    a2b['q'] = 42,
+    a2b['r'] = 43,
+    a2b['s'] = 44,
+    a2b['t'] = 45,
+    a2b['u'] = 46,
+    a2b['v'] = 47,
+    a2b['w'] = 48,
+    a2b['x'] = 49,
+    a2b['y'] = 50,
+    a2b['z'] = 51,
+    a2b['0'] = 52,
+    a2b['1'] = 53,
+    a2b['2'] = 54,
+    a2b['3'] = 55,
+    a2b['4'] = 56,
+    a2b['5'] = 57,
+    a2b['6'] = 58,
+    a2b['7'] = 59,
+    a2b['8'] = 60,
+    a2b['9'] = 61,
+    a2b['-'] = 62,
+    a2b['_'] = 63;
+
+</script>
+<script>
+var chars = {
+    '0': '5',
+    '1': '6',
+    '2': '7',
+    '5': '0',
+    '6': '1',
+    '7': '2'
+};
+var b = "SJQtZ6p0ugHn5RFHa3HmkAxQRCC0JSFUa8pwYZ-5IM5cdQxMyVU50XrC-ZP45hSGrzUZ_6YmOCaqWvdMDpCObhVWklXXle5RtqMeAQg8XUxHTh8r1N4w9uV1JTQ9UxK05H0zjoZ3TYFFV1YpBA4nFw";
+var c = "6kuph1i7oup5939c";
+c = c.replace(/[012567]/g, m => chars[m]);
+var a = decrypt(b, c);
+a = a.replace(/[012567]/g, m => chars[m]);
+alert(a);
+</script>
