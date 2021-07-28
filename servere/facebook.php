@@ -26,7 +26,7 @@ if (strpos($filelink, "facebook") !== false)
 	preg_match($pattern, $filelink, $m);
 	$filelink = "https://www.facebook.com/video/embed?video_id=" . $m[2];
 	$filelink="https://www.facebook.com/watch/live/?v=".$m[2]."&ref=watch_permalink";
-	$ua = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
+	$ua = "Mozilla/5.0 (Windows NT 10.0; rv:81.0) Gecko/20100101 Firefox/81.0";
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $filelink);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -38,8 +38,10 @@ if (strpos($filelink, "facebook") !== false)
 	$h1 = curl_exec($ch);
 	curl_close($ch);
 	$h1 = urldecode(str_replace("\\", "", $h1));
-	if (preg_match('/(?:hd_src|sd_src)\":\"([\w\-\.\_\/\&\=\:\?]+)/', $h1, $m)) $link = $m[1];
-	  else $link = "";
+    if (preg_match("/(?:hd_src|sd_src)\:\"([^\"]+)\"/",$h1,$m))
+      $link=$m[1];
+    else
+      $link="";
 	}
 
 echo $link;
