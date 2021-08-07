@@ -20,58 +20,46 @@
 */
 $filelink = "https://www.fembed.com/v/4lo0jr-px9q";
 
-if (strpos($filelink, "fembed.") !== false)
-	{
+if (preg_match("/embedsito\.com|vidsrc\.xyz|feurl\.|fcdn\.stream|fembed\.|femax\d+\.com|gcloud\.live|bazavox\.com|xstreamcdn\.com|smartshare\.tv|streamhoe\.online|animeawake\.net|mediashore\.org|sexhd\.co|streamm4u\.club/",$filelink)) {
+  $host=parse_url($filelink)['host'];
+  preg_match("/v\/([\w\-]*)/",$filelink,$m);
+  $id=$m[1];
+  $url="https://".$host."/api/source/".$id;
+  $data = array('r' => '','d' => $host);
+  $options = array(
+        'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'POST',
+        'content' => http_build_query($data),
+    )
+  );
 
-	// https://www.fembed.com/v/4lo0jr-px9q
-	// $ua = player user_agent !!!!
+  $context  = stream_context_create($options);
+  $h3 = @file_get_contents($url, false, $context);
+  $r=json_decode($h3,1);
 
-	if ($flash == "flash") $ua = $_SERVER['HTTP_USER_AGENT'];
-	  else
-		{
-		$ua = 'Mozilla/5.0(Linux;Android 7.1.2;ro;RO;MXQ-4K Build/MXQ-4K) MXPlayer/1.8.10';
-		$ua = 'Mozilla/5.0(Linux;Android 10.1.2) MXPlayer';
-		}
-
-	preg_match("/v\/([\w\-]*)/", $filelink, $m);
-	$id = $m[1];
-	$l = "https://www.fembed.com/api/source/" . $id;
-	$post = "r=";
-	$url = $l;
-	$data = array(
-		'r' => ''
-	);
-	$options = array(
-		'http' => array(
-			'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-			'method' => 'POST',
-			'content' => http_build_query($data) ,
-		)
-	);
-	$context = stream_context_create($options);
-	$h3 = @file_get_contents($url, false, $context);
-	$r = json_decode($h3, 1);
-	if (isset($r["captions"][0]["path"]))
-		{
-		if (strpos($r["captions"][0]["path"], "http") === false) $srt = "https://www.fembed.com/asset" . $r["captions"][0]["path"];
-		  else $srt = $r["captions"][0]["path"];
-		}
-
-	$c = count($r["data"]);
-	if (strpos($r["data"][$c - 1]["file"], "http") === false) $l1 = "https://www.fembed.com" . $r["data"][$c - 1]["file"];
-	  else $l1 = $r["data"][$c - 1]["file"];
-	$h4 = @get_headers($l1);
-	foreach($h4 as $key => $value)
-		{
-		if (preg_match("/Location/", $value))
-			{
-			$t1 = explode("Location:", $value);
-			$t2 = explode("\n", $t1[1]);
-			$link = trim($t2[0]);
-			break;
-			}
-		}
-	}
-
+  if (isset($r['player']['poster_file'])) {
+   $t1=explode("userdata/",$r['player']['poster_file']);
+   $t2=explode("/",$t1[1]);
+   $userdata=$t2[0];
+  } else {
+   $userdata="";
+  }
+  if (isset($r["captions"][0]["path"])) {
+   if (strpos($r["captions"][0]["path"],"http") === false)
+    $srt="https://".$host."/asset".$r["captions"][0]["path"];
+   else
+    $srt=$r["captions"][0]["path"];
+  } elseif (isset($r["captions"][0]["hash"])) {
+    $srt="https://".$host."/asset/userdata/".$userdata."/caption/".$r["captions"][0]["hash"]."/".$r["captions"][0]["id"].".".$r["captions"][0]["extension"];
+  }
+  $c = count($r["data"]);
+  if (strpos($r["data"][$c-1]["file"],"http") === false)
+   $link="https://".$host.$r["data"][$c-1]["file"];
+  else
+   $link=$r["data"][$c-1]["file"];
+   if (preg_match("/\#caption\=(.+)/",$filelink,$m))
+     $srt=$m[1];
+}
 echo $link;
 ?>
