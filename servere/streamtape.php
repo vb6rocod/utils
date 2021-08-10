@@ -46,12 +46,12 @@ if (strpos($filelink,"streamtape.com") !== false) {
  $info = curl_getinfo($ch);
  curl_close($ch);
  $h=str_replace("\\","",$h);
- $h=preg_replace("/(\'|\")\s*\+\s*(\'|\")/","",$h);
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
   $srt="https:".$s[1];
 
-  if (preg_match_all("/streamtape\.com\/get\_video\?id\=([\w\_\&\=\-]+)[\'|\"|\<]/",$h,$m)) {
-   $link="https://streamtape.com/get_video?id=".$m[1][count($m[1])-1]."&stream=1";
+  if (preg_match("/\(\'\w+\'\)\.innerHTML\s*\=\s*\(?[\'|\"]([^\'|\"]+)\)?[\'|\"]\s*\+\s*\(?[\'|\"]([^\'|\"]+)[\'|\"]\)?\.substring\((\d+)\)/i",$h,$m)) {
+   $link=$m[1].substr($m[2],$m[3])."&stream=1";
+   if ($link[0]=="/") $link="https:".$link;
   }
 }
 echo $link;
