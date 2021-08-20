@@ -49,8 +49,11 @@ if (strpos($filelink,"streamtape.com") !== false) {
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
   $srt="https:".$s[1];
 
-  if (preg_match("/\(\'\w+\'\)\.innerHTML\s*\=\s*\(?[\'|\"]([^\'|\"]+)\)?[\'|\"]\s*\+\s*\(?[\'|\"]([^\'|\"]+)[\'|\"]\)?\.substring\((\d+)\)/i",$h,$m)) {
-   $link=$m[1].substr($m[2],$m[3])."&stream=1";
+  if (preg_match("/\(\'\w+\'\)\.innerHTML\s*\=((\s*\(?[\'|\"]([^\'|\"]*)\)?[\'|\"]\s*\+\s*)+)\(?[\'|\"]([^\'|\"]+)[\'|\"]\)?\.substring\((\d+)\)/i",$h,$m)) {
+   $rest=substr($m[4],$m[5]);
+   $e="\$link=".str_replace("+",".",$m[1])."'".$rest."';";
+   eval ($e);
+   $link .= "&stream=1";
    if ($link[0]=="/") $link="https:".$link;
   }
 }
