@@ -76,6 +76,7 @@ if (preg_match("/dood(stream)?\./",$filelink)) {
   $h = curl_exec($ch);
   curl_close($ch);
   if (preg_match_all("/location\:\s+(http.+)/i",$h,$m)) {
+    $filelink=trim($m[1][count($m[1])-1]);
     $host=parse_url(trim($m[1][count($m[1])-1]))['host'];
   }
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $h, $s))
@@ -109,7 +110,7 @@ if (preg_match("/dood(stream)?\./",$filelink)) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h1 = curl_exec($ch);
   curl_close($ch);
-  if (preg_match("/http/",$h1))
+  if (preg_match("/http/",$h1) && substr($h1, 0, 4)=="http")
    $link=$h1."?token=".$tok."&expiry=".(time()*1000);
   else
    $link="";
