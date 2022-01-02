@@ -20,6 +20,7 @@
  */
 
 $filelink="https://sbplay2.com/e/jxf4aynwz1cs.html";
+$filelink="https://cloudemb.com/e/grstev3m144o.html";
 if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.net|sbplay\.one|cloudemb\.com|playersb\.com|tubesb\.com|sbplay\d\.com|embedsb\.com/",$filelink)) {
   /* Thanks to tvaddonsco for first part */
   
@@ -97,8 +98,9 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
      // Alias may change !!!! No solution yet... see js/app.v1.xx.js
      // '/sour' + 'cessx' + '34'
      // This is for app.v1.34.js
-     $alias="sourcessx34";
-     $l="https://".$host."/".$alias."/".$c1."/".$c3;
+     $alias="/sourcessx34/";
+     //$alias=get_alias("https://".$host."/e/".$id.".html");
+     $l="https://".$host.$alias.$c1."/".$c3;
 
      $ua="Mozilla/5.0 (Windows NT 10.0; rv:95.0) Gecko/20100101 Firefox/95.0";
      $head=array('Accept: application/json, text/plain, */*',
@@ -123,6 +125,40 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
      $x=json_decode($h,1);
      $link=$x['stream_data']['file'];
   }
+}
+function get_alias($l) {
+  $host=parse_url($l)['host'];
+  $part1="";
+  $part2="";
+  $part3="";
+  $ua="Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0";
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+
+  curl_setopt($ch, CURLOPT_URL, $l);
+  $h = curl_exec($ch);
+
+  if (preg_match("/app\.v1\.(\d{2})\.js/",$h,$m)) {
+    $ver=$m[1];
+    $l="https://".$host."/js/".$m[0];
+    curl_setopt($ch, CURLOPT_URL, $l);
+    $h = curl_exec($ch);
+    $part1='/sour';
+    if (preg_match("/\'(ces\w{2,3})\'/",$h,$m)) {
+      $part2=$m[1];
+      if (preg_match("/\'(\d{2}\/)\'/",$h,$m))
+        $part3=$m[1];
+      else
+        $part3=$ver."/";
+    }
+  }
+  curl_close($ch);
+  return $part1.$part2.$part3;
 }
 echo $link;
 ?>
