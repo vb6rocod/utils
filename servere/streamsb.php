@@ -21,6 +21,7 @@
 
 $filelink="https://sbplay2.com/e/jxf4aynwz1cs.html";
 $filelink="https://cloudemb.com/e/grstev3m144o.html";
+$filelink="https://cloudemb.com/e/mwuaso93r0j7.html";
 if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.net|sbplay\.one|cloudemb\.com|playersb\.com|tubesb\.com|sbplay\d\.com|embedsb\.com/",$filelink)) {
   /* Thanks to tvaddonsco for first part */
   
@@ -99,7 +100,8 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
      // '/sour' + 'cessx' + '34'
      // This is for app.v1.34.js
      $alias="/sourcessx34/";
-     //$alias=get_alias("https://".$host."/e/".$id.".html");
+     $alias=get_alias("https://".$host."/e/".$id.".html");
+     //echo $alias;
      $l="https://".$host.$alias.$c1."/".$c3;
 
      $ua="Mozilla/5.0 (Windows NT 10.0; rv:95.0) Gecko/20100101 Firefox/95.0";
@@ -151,7 +153,7 @@ function get_alias($l) {
     $part1='/sour';
     if (preg_match("/\'(ces\w{2,3})\'/",$h,$m)) {
       $part2=$m[1];
-      if (preg_match("/\'(\d{2}\/)\'/",$h,$m))
+      if (preg_match("/\'(\d{1,2}\/)\'/",$h,$m))
         $part3=$m[1];
       else
         $part3=$ver."/";
