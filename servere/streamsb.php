@@ -23,13 +23,12 @@ $filelink="https://sbplay2.com/e/jxf4aynwz1cs.html";
 $filelink="https://cloudemb.com/e/grstev3m144o.html";
 $filelink="https://cloudemb.com/e/mwuaso93r0j7.html";
 if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.net|sbplay\.one|cloudemb\.com|playersb\.com|tubesb\.com|sbplay\d\.com|embedsb\.com/",$filelink)) {
-  /* Thanks to tvaddonsco for first part */
-  
+
   $pattern = "/(?:\/\/|\.)((?:tube|player|cloudemb|stream)?s?b?(?:embed\d?|embedsb\d?|play\d?|video)?\.(?:com|net|org|one))\/(?:embed-|e|play|d)?\/?([0-9a-zA-Z]+)/";
   preg_match($pattern,$filelink,$m);
   $host=$m[1];
   $id=$m[2];
-  $l="https://".$host."/d/".$id.".html";
+  $l="https://".$host."/e/".$id.".html";
 
   $ua="Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0";
   $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -49,30 +48,24 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
+  if (preg_match("/app\.v1\.(\d{2})\.js/",$h,$m)) {
+    $ver=$m[1];
+    $l="https://".$host."/js/".$m[0];
+    curl_setopt($ch, CURLOPT_URL, $l);
+    $h1 = curl_exec($ch);
+    if (preg_match("/\'(ces\w{2,3})\'/",$h1,$m)) {  // maybe
+     $alias="sour".$m[1];
+    } else {
+     $alias="sourcessx34";
+     $alias="sourcesx38";
+     $alias="sources40";
+    }
+  }
   curl_close($ch);
 
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $filelink." ".$h, $s)) {
     $srt="https:".$s[1];
   }
-  $pattern="/download\_video\(\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'/";
-  if (preg_match($pattern,$h,$m)) {   // download allow
-
-  $l="https://".$host."/dl?op=download_orig&id=".$m[1]."&mode=".$m[2]."&hash=".$m[3];
-  $ch = curl_init($l);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER  ,1);  // RETURN THE CONTENTS OF THE CALL
-  curl_setopt($ch, CURLOPT_REFERER,$filelink);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
-  $html = curl_exec($ch);
-  curl_close ($ch);
-
-  $pattern="/href\=\"([^\"]+)\"\>Direct/";
-  if (preg_match($pattern,$html,$m))
-   $link=$m[1];
-  } else {  // no download allow ! (https://cloudemb.com/e/snlcjicyu49f.html)
     function enc($a) {
      $b="";
      for ($k=0;$k<strlen($a);$k++) {
@@ -87,7 +80,7 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
       $b .=$c[rand(0,61)];
      }
      return $b;
-     }
+    }
 
      $x=makeid(12)."||".$id."||".makeid(12)."||"."streamsb";
      $c1=enc($x);
@@ -96,13 +89,8 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
      $c2=enc($x);
      $x=makeid(12)."||".$c2."||".makeid(12)."||"."streamsb";
      $c3=enc($x);
-     // Alias may change !!!! No solution yet... see js/app.v1.xx.js
-     // '/sour' + 'cessx' + '34'
-     // This is for app.v1.34.js
-     $alias="/sourcessx34/";
-     $alias=get_alias("https://".$host."/e/".$id.".html");
-     //echo $alias;
-     $l="https://".$host.$alias.$c1."/".$c3;
+
+     $l="https://".$host."/".$alias."/".$c1."/".$c3;
 
      $ua="Mozilla/5.0 (Windows NT 10.0; rv:95.0) Gecko/20100101 Firefox/95.0";
      $head=array('Accept: application/json, text/plain, */*',
@@ -126,41 +114,6 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
 
      $x=json_decode($h,1);
      $link=$x['stream_data']['file'];
-  }
-}
-function get_alias($l) {
-  $host=parse_url($l)['host'];
-  $part1="";
-  $part2="";
-  $part3="";
-  $ua="Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0";
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
-
-  curl_setopt($ch, CURLOPT_URL, $l);
-  $h = curl_exec($ch);
-
-  if (preg_match("/app\.v1\.(\d{2})\.js/",$h,$m)) {
-    $ver=$m[1];
-    $l="https://".$host."/js/".$m[0];
-    curl_setopt($ch, CURLOPT_URL, $l);
-    $h = curl_exec($ch);
-    $part1='/sour';
-    if (preg_match("/\'(ces\w{2,3})\'/",$h,$m)) {
-      $part2=$m[1];
-      if (preg_match("/\'(\d{1,2}\/)\'/",$h,$m))
-        $part3=$m[1];
-      else
-        $part3=$ver."/";
-    }
-  }
-  curl_close($ch);
-  return $part1.$part2.$part3;
 }
 echo $link;
 ?>
