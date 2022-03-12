@@ -75,10 +75,10 @@ if (preg_match("/vidnext\.net|vidnode\.net|vidembed\.(net|cc|io)|\/vidcloud9\./"
   $y = preg_replace('/[[:^print:]]/', '', $y);
 
   $r=json_decode($y,1);
-  //print_r ($r);
+
   if (isset($r['source'][0]['file'])) {
    $c=count($r['source'])-1;
-   if (preg_match("/auto/i",$r[$c]['label'])) $c=$c-1;
+   if (preg_match("/auto/i",$r['source'][$c]['label'])) $c=$c-1;
    $link= $r['source'][$c]['file'];
   }
 
