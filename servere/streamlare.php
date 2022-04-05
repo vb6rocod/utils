@@ -49,6 +49,7 @@ if (strpos($filelink,"streamlare") !== false) {
   $t2=explode('"',$t1[1]);
   $csrf=$t2[0];
   $l="https://".$host."/api/video/get";
+  $l="https://".$host."/api/video/stream/get";
   $post='{"id":"'.$id.'"}';
   $head=array('Accept: application/json, text/plain, */*',
    'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
@@ -75,8 +76,14 @@ if (strpos($filelink,"streamlare") !== false) {
   curl_close ($ch);
   $x=json_decode($h,1);
   // see app.js
-  if (isset($x['result']['Original']['src']))
-   $link = xor_string(base64_decode($x['result']['Original']['src']),"3");
+  //if (isset($x['result']['Original']['src']))
+  // $link = xor_string(base64_decode($x['result']['Original']['src']),"3");
+  if (isset($x['result']['playlist']))
+   $link= $x['result']['playlist'];
+  elseif (isset($x['result']['Original']['src']))
+   $link=$x['result']['Original']['src'];
+  elseif (isset($x['result']['file']))
+   $link=$x['result']['file'];
 }
 echo $link;
 ?>
