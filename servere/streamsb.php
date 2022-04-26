@@ -48,7 +48,7 @@ if (preg_match("/sbembed\.com|sbembed1\.com|sbplay\.org|sbvideo\.net|streamsb\.n
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
-  if (preg_match("/app\.v1\.(\d{2})\.js/",$h,$m)) {
+  if (preg_match("/app\.?v?1?\.?(\d{2})?\.js/",$h,$m)) {
     $ver=$m[1];
     $l="https://".$host."/js/".$m[0];
     curl_setopt($ch, CURLOPT_URL, $l);
