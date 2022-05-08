@@ -20,7 +20,7 @@
  */
 
 $filelink="https://vidembed.cc/streaming.php?id=MzU1OTA2&title=Finch&typesub=SUB&sub=L2ZpbmNoL2ZpbmNoLnYxLnZ0dA==&cover=Y292ZXIvZmluY2gucG5n";
-if (preg_match("/vidnext\.net|vidnode\.net|vidembed\.(net|cc|io)|\/vidcloud9\./",$filelink)) {
+if (preg_match("/vidnext\.net|vidnode\.net|vidembed\.(net|cc|io)|\/vidcloud9\.|membed\.net/",$filelink)) {
   require_once("aes.php");
   $t1=explode("&",$filelink);
   $rest=$t1[1];
@@ -78,7 +78,7 @@ if (preg_match("/vidnext\.net|vidnode\.net|vidembed\.(net|cc|io)|\/vidcloud9\./"
 
   if (isset($r['source'][0]['file'])) {
    $c=count($r['source'])-1;
-   if (preg_match("/auto/i",$r['source'][$c]['label'])) $c=$c-1;
+   if (preg_match("/auto/i",$r['source'][$c]['label']) && $c>1) $c=$c-1;
    $link= $r['source'][$c]['file'];
   }
 
