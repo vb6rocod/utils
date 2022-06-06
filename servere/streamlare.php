@@ -82,6 +82,8 @@ if (strpos($filelink,"streamlare") !== false) {
    $link= $x['result']['playlist'];
   elseif (isset($x['result']['Original']['src']))
    $link=$x['result']['Original']['src'];
+  elseif (isset($x['result']['Original']['file']))
+   $link=$x['result']['Original']['file'];
   elseif (isset($x['result']['file']))
    $link=$x['result']['file'];
 }

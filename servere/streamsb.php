@@ -48,8 +48,10 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
-  if (preg_match("/app\.?v?1?\.?(\d{2})?\.js/",$h,$m)) {
-    $ver=$m[1];
+  //if (preg_match("/app\.?(min\.)?v?1?\.?(\d{2})?\.js/",$h,$m)) {
+  if (preg_match("/app(.*?)\.js/",$h,$m)) {
+    //$ver=$m[1];
+    //print_r ($m);
     $l="https://".$host."/js/".$m[0];
     curl_setopt($ch, CURLOPT_URL, $l);
     $h1 = curl_exec($ch);
