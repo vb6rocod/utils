@@ -103,7 +103,8 @@ if (strpos($filelink,"filemoon.") !== false) {
     },
     $seed
   );
-  $link = decrypt($src,$seed);
+  // $link = decrypt($src,$seed);
+  $link=$y[0]['file']; // no need to decrypt 07.08.2022
   $link=preg_replace_callback(
     $rep,
     function ($m) {
