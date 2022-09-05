@@ -101,6 +101,14 @@ if (preg_match("/streamlare\.com|slmaxed\.com|slwatch\.co/",$filelink)) {
    $link=$x['result']['Original']['file'];
   elseif (isset($x['result']['file']))
    $link=$x['result']['file'];
+  elseif (isset($x['result']['1080p']['file']))
+   $link=$x['result']['1080p']['file'];
+  elseif (isset($x['result']['720p']['file']))
+   $link=$x['result']['720p']['file'];
+  elseif (isset($x['result']['480p']['file']))
+   $link=$x['result']['480p']['file'];
+  elseif (isset($x['result']['360p']['file']))
+   $link=$x['result']['360p']['file'];
 
   if ($link && preg_match("/video\?token/",$link)) {
   $ch = curl_init();
