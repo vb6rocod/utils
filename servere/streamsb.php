@@ -48,8 +48,21 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
+  if (preg_match("/app\.?(min\.)?v?\d+?\.?(\d+)?\.js/",$h,$m)) {
+    $l="https://".$host."/js/".$m[0];
+    curl_setopt($ch, CURLOPT_URL, $l);
+    $h1 = curl_exec($ch);
+    if (preg_match("/\'(ces\w{2,3})\'/",$h1,$m)) {
+     $alias="sour".$m[1];
+     //print_r ($m);
+    } else {
+     $alias="sourcessx34";
+     $alias="sourcesx38";
+     $alias="sources48";
+    }
+
+  }
   curl_close($ch);
-  $alias="sources43";
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $filelink." ".$h, $s)) {
     $srt="https:".$s[1];
   }
@@ -83,7 +96,7 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
      $head=array('Accept: application/json, text/plain, */*',
      'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
      'Accept-Encoding: deflate',
-     'watchsb: streamsb',
+     'watchsb: sbstream',
      'Connection: keep-alive',
      'Referer: https://'.$host);
 
