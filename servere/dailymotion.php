@@ -24,27 +24,20 @@ if (strpos($filelink,"dailymotion.com") !==false) {
   // https://www.dailymotion.com/embed/video/x2l65up?autoplay=1
   preg_match ("/video\/([a-zA-Z0-9]+)/",$filelink,$m);
   $id=$m[1];
-  $filelink="https://www.dailymotion.com/embed/video/".$id;
-  $ua="Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0";
-
-  $h=file_get_contents($filelink);
-  $t1=explode('var config = {',$h);
-  $t2=explode('window.playerV5',$t1[1]);
-  $t1=explode('window.__PLAYER_CONFIG__ = {',$h);
-  $t2=explode(';</script',$t1[1]);
-  $h1=trim("{".$t2[0]);
-
-  $r1=json_decode($h1,1);
-
-  $l1=$r1['context']['metadata_template_url'];
-  $l1=str_replace(':videoId',$id,$l1);
-  $l1=str_replace('embedder=:',urlencode($filelink),$l1);
-  $h3=file_get_contents($l1);
-  $r2=json_decode($h3,1);
-
+  $l="https://www.dailymotion.com/embed/video/".$id;
+  $h=file_get_contents($l);
+  $t1=explode('"ts":',$h);
+  $t2=explode(",",$t1[1]);
+  $ts=$t2[0];
+  $t1=explode('"v1st":"',$h);
+  $t2=explode('"',$t1[1]);
+  $dm=$t2[0];
+  $l="https://www.dailymotion.com/player/metadata/video/".$id."?embedder=".urlencode($filelink);
+  $l .="&dmV1st=".$dm."&dmTs=".$ts."&is_native_app=0&app=com.dailymotion.neon&client_type=website&section_type=player&component_style=_";
+  $h=file_get_contents($l);
+  $r2=json_decode($h,1);
   $l_main=$r2['qualities']['auto'][0]['url'];
   $link=$l_main;
-
   $h2=file_get_contents($l_main);
 
   if (preg_match_all("/^http(.*)$/m",$h2,$q)) {
