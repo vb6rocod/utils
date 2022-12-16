@@ -59,6 +59,7 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
      $alias="sourcessx34";
      $alias="sourcesx38";
      $alias="sources48";
+     $alias="sources49";
     }
 
   }
