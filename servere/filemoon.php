@@ -20,6 +20,7 @@
  */
 
 $filelink="https://filemoon.sx/e/re09uiwgwgve?c1_file=https://seriale-online.net/subtitrarifilme/tt11291274.vtt&c1_label=Romana";
+// https://filemoon.to/e/dk86vk0iouf2?sub.info=https://fmovies.to/ajax/episode/subtitles/0b5d2788859f1833c7f39eb5f5b02122?&autostart=true
 if (strpos($filelink,"filemoon.") !== false) {
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $filelink, $s))
     $srt="https:".$s[1];
@@ -42,7 +43,10 @@ if (strpos($filelink,"filemoon.") !== false) {
   $out="";
   if (preg_match("/eval\(function\(p,a,c,k,e,[r|d]?/",$h)) {
   $jsu = new JavaScriptUnpacker();
-  $out = $jsu->Unpack($h);
+  preg_match_all("/eval\(function.*?\<\//s",$h,$m);
+  for ($k=0;$k<count($m[0]);$k++) {
+  $out .= $jsu->Unpack($m[0][$k]);
+  }
   }
 
   if (preg_match("/sources\:\[\{file\:\"([^\"]+)\"/",$out,$m))
