@@ -48,6 +48,7 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
+  $alias="";
   if (preg_match("/app\.?(min\.)?v?\d+?\.?(\d+)?\.js/",$h,$m)) {
     $l="https://".$host."/js/".$m[0];
     curl_setopt($ch, CURLOPT_URL, $l);
@@ -56,12 +57,15 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
      $alias="sour".$m[1];
      //print_r ($m);
     } else {
-     $alias="sourcessx34";
-     $alias="sourcesx38";
-     $alias="sources48";
-     $alias="sources49";
+     $alias="sources51";
     }
 
+  } else {
+    if (preg_match("/\'(ces\w{2,3})\'/",$h,$m)) {   // no js
+     $alias="sour".$m[1];
+    } else {
+     $alias="sources51";
+    }
   }
   curl_close($ch);
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $filelink." ".$h, $s)) {
