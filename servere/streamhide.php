@@ -21,6 +21,7 @@
 
 $filelink="https://streamhide.to/w/s0rd5nkp8usf";
 if (strpos($filelink,"streamhide") !== false) {
+  require_once("JavaScriptUnpacker.php");
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $filelink);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -32,7 +33,10 @@ if (strpos($filelink,"streamhide") !== false) {
   curl_setopt($ch, CURLOPT_TIMEOUT, 15);
   $h = curl_exec($ch);
   curl_close($ch);
-  if (preg_match('/sources\:\s+\[\{file\:\"([^\"]+)\"/', $h, $m))
+  $jsu = new JavaScriptUnpacker();
+  $out = $jsu->Unpack($h);
+  $out .=$h;
+  if (preg_match('/sources\:\s*\[\{file\:\"([^\"]+)\"/', $out, $m))
    $link=$m[1];
   else
    $link="";
