@@ -48,8 +48,8 @@ if (strpos($filelink,"filemoon.") !== false) {
   $out .= $jsu->Unpack($m[0][$k]);
   }
   }
-
-  if (preg_match("/sources\:\[\{file\:\"([^\"]+)\"/",$out,$m))
+  $out=$h." ".$out;
+  if (preg_match("/sources\:\s*\[\{file\:\"([^\"]+)\"/",$out,$m))
     $link=$m[1];
    if ($link && $flash <> "flash")
     $link=$link."|Referer=".urlencode("https://filemoon.sx")."&Origin=".urlencode("https://filemoon.sx");
