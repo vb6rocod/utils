@@ -28,46 +28,9 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
   preg_match($pattern,$filelink,$m);
   $host=$m[1];
   $id=$m[2];
-  $l="https://".$host."/e/".$id.".html";
 
   $ua="Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0";
-  $head=array('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-  'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-  'Accept-Encoding: deflate',
-  'Connection: keep-alive',
-  'Upgrade-Insecure-Requests: 1');
 
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $l);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch,CURLOPT_REFERER,$filelink);
-  curl_setopt($ch, CURLOPT_HTTPHEADER,$head);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
-  $h = curl_exec($ch);
-  $alias="";
-  if (preg_match("/app\.?(min\.)?v?\d+?\.?(\d+)?\.js/",$h,$m)) {
-    $l="https://".$host."/js/".$m[0];
-    curl_setopt($ch, CURLOPT_URL, $l);
-    $h1 = curl_exec($ch);
-    if (preg_match("/\'(ces\w{2,3})\'/",$h1,$m)) {
-     $alias="sour".$m[1];
-     //print_r ($m);
-    } else {
-     $alias="sources51";
-    }
-
-  } else {
-    if (preg_match("/\'(ces\w{2,3})\'/",$h,$m)) {   // no js
-     $alias="sour".$m[1];
-    } else {
-     $alias="sources51";
-    }
-  }
-  curl_close($ch);
   if (preg_match('/(\/\/[\.\d\w\-\.\/\\\:\?\&\#\%\_\,]*(\.(srt|vtt)))/', $filelink." ".$h, $s)) {
     $srt="https:".$s[1];
   }
@@ -86,16 +49,10 @@ if (preg_match("/sbfull\.|sbfast\.|sbembed\.com|sbembed1\.com|sbplay\.org|sbvide
      }
      return $b;
     }
-
-     $x=makeid(12)."||".$id."||".makeid(12)."||"."streamsb";
-     $c1=enc($x);
-     $x=makeid(12)."||".makeid(12)."||".makeid(12)."||"."streamsb";
-
-     $c2=enc($x);
-     $x=makeid(12)."||".$c2."||".makeid(12)."||"."streamsb";
-     $c3=enc($x);
-
-     $l="https://".$host."/".$alias."/".$c1."/".$c3;
+     // quick fix, need more....
+     $c1="375664356a494546326c4b797c7c6e756577776778623171737";
+     $c3=enc("91a9MQzmQu7T||".$id."||HSsvhTZGLdhX||streamsb");
+     $l="https://".$host."/".$c1."/".$c3;
 
      $ua="Mozilla/5.0 (Windows NT 10.0; rv:95.0) Gecko/20100101 Firefox/95.0";
      $head=array('Accept: application/json, text/plain, */*',
