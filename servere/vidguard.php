@@ -76,10 +76,10 @@ if (preg_match("/vgfplay\.|fslinks\./",$filelink)) {
   $t1=explode('window.svg=',$out);
   $rest = substr($t1[1], 0, -1);
   $r=json_decode($rest,1);
-
+  //print_r ($r);
   $q=array();
-  for ($k=0;$k<count($r['streams']);$k++) {
-   $q[$r['streams'][$k]['Label']]=$r['streams'][$k]['URL'];
+  for ($k=0;$k<count($r['stream']);$k++) {
+   $q[$r['stream'][$k]['Label']]=$r['stream'][$k]['URL'];
   }
   if (isset($q['1080p']))
    $l=$q['1080p'];
@@ -91,7 +91,7 @@ if (preg_match("/vgfplay\.|fslinks\./",$filelink)) {
    $l=$q['360p'];
   elseif (isset($q['auto']))
    $l=$q['auto'];
-  $t1=explode("token=",$l);
+  $t1=explode("sig=",$l);
   $t2=explode("&",$t1[1]);
   $token=$t2[0];
   $token1=substr(base64_decode(kk($token,2,16)),5);

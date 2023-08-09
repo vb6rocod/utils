@@ -45,6 +45,7 @@ if (strpos($filelink,"bestx.stream") !== false) {
   require_once("cryptoJsAesDecrypt.php");
   $js=new cryptoJsAesDecrypt();
   $pass="4VqE3#N7zt&HEP^a";
+  $pass="11x&W5UBrcqn\$9Yl";
   $out = $js->decrypt2($pass,base64_decode($enc));
   $link="";
   $srt="";
