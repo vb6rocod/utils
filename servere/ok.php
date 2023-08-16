@@ -57,4 +57,6 @@ if (strpos($filelink,"ok.ru") !==false) {
   }
 }
 echo $link;
+echo '<BR>';
+echo '<a href="potplayer://'.$link.'">Play</a>';
 ?>
