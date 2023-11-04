@@ -20,15 +20,54 @@
  */
 
 $filelink="https://bestx.stream/v/D6Rj6gBwm42V/";
-if (strpos($filelink,"bestx.stream") !== false) {
-  $host="https://bestx.stream";
+/* origin https://w1.moviesapi.club */
+
+    function def($d, $e, $f) {
+        $x="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
+        $h=substr($x,0,$e);
+
+        $i=substr($x,0,$f);
+
+        $d=strrev($d);
+        $a=0;
+        for ($z=0;$z<strlen($d);$z++) {
+         $b=$d[$z];
+         if (strpos($h,$b) !== false) $a +=strpos($h,$b) * pow($e,$z);
+        }
+        $k = "";
+        $j=$a;
+        while ($j > 0) {
+            $k = $i[$j % $f] . $k;
+            $j = ($j - ($j % $f)) / $f;
+        }
+        return $k;
+    }
+    function player($p, $l, $a, $y, $e, $r) {
+        $r = "";
+        $len = strlen($p);
+        for ($i = 0;  $i < $len; $i++) {
+            $s = "";
+            while ($p[$i] !== $a[$e]) {
+                $s .= $p[$i];
+                $i++;
+            }
+            for ($j = 0; $j < strlen($a); $j++) {
+              $s=str_replace($a[$j],$j,$s);
+            }
+
+            $r .= chr(def($s, $e, 10) - $y);
+        }
+        return $r;
+    };
+  $host="https://".parse_url($filelink)['host'];
+
   $head=array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/112.0',
   'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
   'Accept-Encoding: deflate',
   'Connection: keep-alive',
-  'Referer: https://pressplay.top',
-  'Origin: https://pressplay.top',
+  'Referer: '.$host,
+  'Origin: '.$host,
   'Upgrade-Insecure-Requests: 1');
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL,$filelink);
@@ -39,36 +78,29 @@ if (strpos($filelink,"bestx.stream") !== false) {
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
+  if (preg_match("/class\=\"vidframe\"\s+src\=\"([^\"]+)\"/",$h,$m)) {   //https://moviesapi.club/movie/447365
+  curl_setopt($ch, CURLOPT_URL,$m[1]);
+  $h = curl_exec($ch);
+  }
   curl_close($ch);
-  if (preg_match("/MasterJS\s*\=\s*[\'\"]([^\'\"]+)[\'\"]/i",$h,$m)) {
+  if (preg_match("/\=\s+\'([^\']+)\'/",$h,$m)) {
   $enc=$m[1];
   require_once("cryptoJsAesDecrypt.php");
   $js=new cryptoJsAesDecrypt();
-  $pass="4VqE3#N7zt&HEP^a";
-  $pass="11x&W5UBrcqn\$9Yl";
-  $out = $js->decrypt2($pass,base64_decode($enc));
+  if (preg_match("/eval\(_0x[a-z0-9]+\(([^\)]+)\)/",$h,$n)) {
+    $x=trim(str_replace('"',"",$n[1]));
+    $z=explode(",",$x);
+    $mm=player($z[0],$z[1],$z[2],$z[3],$z[4],$z[5]);
+    if (preg_match("/\'([^\']+)\'/",$mm,$m))
+      $pass=$m[1];
+    else
+      $pass="";
+  }
+  $out = $js->decrypt1($pass,$enc);
   $link="";
-  $srt="";
-  $srt1=array();
   if (preg_match("/sources\:\s*\[\{\"file\"\:\"([^\"]+)\"/",$out,$m))
    $link=$m[1];
-  if (preg_match_all("/file\"\:\"([^\"]+)\"\,\"label\"\:\"(English|Romanian)/i",$out,$s)) {
-    for ($k=0;$k<count($s[2]);$k++) {
-     if (preg_match("/English/i",$s[2][$k]))
-      if (!isset($srt1["English"])) $srt1["English"]=$s[1][$k];
-     if (preg_match("/Romanian/i",$s[2][$k]))
-      if (!isset($srt1["Romanian"])) $srt1["Romanian"]=$s[1][$k];
-    }
-    if (isset($srt1["Romanian"]))
-     $srt=$srt1["Romanian"];
-    elseif (isset($srt1["English"]))
-     $srt=$srt1["English"];
-  }
-  if ($link && $flash <> "flash") {
-  $ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/112.0";
-  $link .="|Referer=".urlencode($host)."&Origin=".urlencode($host)."&User-Agent=".urlencode($ua);;
-  }
-  }
-}
+ }
+
 echo $link;
 ?>
