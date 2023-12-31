@@ -20,8 +20,17 @@
  */
 
 $filelink="https://fslinks.org/e/gqM1VOPXwMOo4kY?&c1_file=http://filmeserialeonline.org/srt/tt5264838.srt&c1_label=RO&c2_file=http://filmeserialeonline.org/srt/tt5264838_EN.srt&c2_label=EN";
-if (preg_match("/vgfplay\.|fslinks\./",$filelink)) {
+if (preg_match("/vgfplay\.|fslinks\.|vembed\.net|vgembed\.|vid-guard\.com|embedv\./",$filelink)) {
   require_once("AADecoder1.php");
+  function decode_code1($code){
+    return preg_replace_callback(
+        "@\\\\(u)([0-9a-fA-F]{4})@",
+        function($m){
+            return mb_convert_encoding(chr($m[1]?hexdec($m[2]):octdec($m[2])),'UTF-8');
+        },
+        $code
+    );
+  }
   function kk($p,$q,$s) {   // from /assets/js/main.js?id=
    $u="";
    for ($v=0;$v<strlen($p);$v +=2) {
@@ -62,7 +71,8 @@ if (preg_match("/vgfplay\.|fslinks\./",$filelink)) {
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
   curl_setopt($ch, CURLOPT_TIMEOUT, 25);
   $h = curl_exec($ch);
-
+  curl_close($ch);
+  /*
   $t1=explode('videojs/ad/plugin.js?id=',$h);
   $t2=explode('"',$t1[1]);
   $id=$t2[0];
@@ -70,13 +80,21 @@ if (preg_match("/vgfplay\.|fslinks\./",$filelink)) {
 
   curl_setopt($ch, CURLOPT_URL,$l);
   $h1 = curl_exec($ch);
-  curl_close($ch);
+  */
+  $h=decode_code1($h);
+  $h=str_replace(" ","",$h);
+  $h=str_replace("\/","/",$h);
+  $h=str_replace("'\\\\\\\\'","'\\\\'",$h);
+  $h=str_replace("'\\\\\"'","'\\\"'",$h);
   $jsu=new AADecoder();
-  $out = $jsu->decode($h1);
+  $out = $jsu->decode($h);
   $t1=explode('window.svg=',$out);
-  $rest = substr($t1[1], 0, -1);
+  $t2=explode(';")',$t1[1]);
+  $rest=$t2[0];
+  //$rest = substr($t1[1], 0, -1);
   $r=json_decode($rest,1);
   //print_r ($r);
+  /*
   $q=array();
   for ($k=0;$k<count($r['stream']);$k++) {
    $q[$r['stream'][$k]['Label']]=$r['stream'][$k]['URL'];
@@ -91,6 +109,8 @@ if (preg_match("/vgfplay\.|fslinks\./",$filelink)) {
    $l=$q['360p'];
   elseif (isset($q['auto']))
    $l=$q['auto'];
+  */
+  $l=$r['stream'];
   $t1=explode("sig=",$l);
   $t2=explode("&",$t1[1]);
   $token=$t2[0];
