@@ -94,7 +94,7 @@ if (preg_match("/vgfplay\.|fslinks\.|vembed\.net|vgembed\.|vid-guard\.com|embedv
   //$rest = substr($t1[1], 0, -1);
   $r=json_decode($rest,1);
   //print_r ($r);
-  /*
+  if (isset($r['stream'][0]['URL'])) {
   $q=array();
   for ($k=0;$k<count($r['stream']);$k++) {
    $q[$r['stream'][$k]['Label']]=$r['stream'][$k]['URL'];
@@ -109,8 +109,9 @@ if (preg_match("/vgfplay\.|fslinks\.|vembed\.net|vgembed\.|vid-guard\.com|embedv
    $l=$q['360p'];
   elseif (isset($q['auto']))
    $l=$q['auto'];
-  */
+  } else {
   $l=$r['stream'];
+  }
   $t1=explode("sig=",$l);
   $t2=explode("&",$t1[1]);
   $token=$t2[0];
