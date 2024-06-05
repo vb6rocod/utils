@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+ function str_between($string, $start, $end){
+	$string = " ".$string; $ini = strpos($string,$start);
+	if ($ini == 0) return ""; $ini += strlen($start); $len = strpos($string,$end,$ini) - $ini;
+	return substr($string,$ini,$len);
+}
 function youtube($file) {
 function reverse($a,$b) {
 	return  array_reverse($a);
@@ -34,7 +39,7 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
   $l = "https://www.youtube.com/watch?v=".$id;
   $html="";
   $p=0;
-  $ua="Mozilla/5.0 (Windows NT 10.0; rv:82.0) Gecko/20100101 Firefox/82.0";
+  $ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0";
   while($html == "" && $p<10) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $l);
@@ -118,6 +123,7 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
     $video="";
   if ($video) {
   parse_str($video, $output);
+  //print_r ($output);
   if (!isset($output['s'])) {
     $r=$video;
   } else {
@@ -167,87 +173,88 @@ if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)
 } else
   return "";
 }
-
-/* Or..... */
-function youtube_nou($file) {
- if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)) {
+function youtube1($file) {
+if(preg_match('/youtube\.com\/(v\/|watch\?v=|embed\/)([\w\-]+)/', $file, $match)) {
+  $r=array();
+  $s=array();
+  $out="";
   $id = $match[2];
+  $l="https://en.y2mate.is/v41/";
+  $head=array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+  'Accept: application/json, text/javascript, */*; q=0.01',
+  'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
+  'Accept-Encoding: deflate',
+  'Origin: https://en.y2mate.is',
+  'Connection: keep-alive',
+  'Referer: https://en.y2mate.is/');
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $l);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_HEADER, 1);
+  $h = curl_exec($ch);
+  curl_close($ch);
+
+  preg_match_all("/Set-Cookie:\s*([\S]+)/i",$h,$c);
+  $cookie="Cookie: ";
+  for ($z=0;$z<count($c[1]);$z++) {
+   $cookie .=$c[1][$z]." ";
+  }
+  $t1=explode('csrf-token" content="',$h);
+  $t2=explode('"',$t1[1]);
+  $csrf=$t2[0];
+
   $file = "https://www.youtube.com/watch?v=".$id;
- $ua="Mozilla/5.0 (Windows NT 10.0; rv:93.0) Gecko/20100101 Firefox/93.0";
- $l="https://yt1s.com/api/ajaxSearch/index";
- $post="q=".$file."&vt=home";
- $head=array('Accept: */*',
+  $l="https://y2mate.is/analyze";
+  $l="https://en.y2mate.so/analyze";
+  $l="https://en.y2mate.is/analyze";
+  $post= "url=".$file;
+  $head=array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+  'Accept: application/json, text/javascript, */*; q=0.01',
   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
   'Accept-Encoding: deflate',
   'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-  'X-Requested-With: XMLHttpRequest',
   'Content-Length: '.strlen($post),
-  'Origin: https://yt1s.com',
+  'X-CSRF-TOKEN: '.$csrf,
+  $cookie,
+  'Origin: https://en.y2mate.is',
   'Connection: keep-alive',
-  'Referer: https://yt1s.com/en26');
+  'Referer: https://en.y2mate.is/');
+
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $l);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_POST,1);
-  curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
   curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
   $h = curl_exec($ch);
   curl_close($ch);
+  $r=json_decode($h,1)['formats']['video'];
 
-  $x=json_decode($h,1);
-
-  $vid=$x['vid'];
-  $k="";
-
-  $qa=array ("auto","37","22","18");
-  $l="https://yt1s.com/api/ajaxConvert/convert";
-  for ($z=0;$z <count($x['links']['mp4']);$z++) {
-   for ($y=0;$y<count($qa);$y++) {
-    if (isset ($x['links']['mp4'][$qa[$y]])) {
-     $k=$x['links']['mp4'][$qa[$y]]['k'];
-     break;
-    }
-   }
+  foreach ($r as $rr) {
+   if ($rr['needConvert']==false)
+    $s[$rr['formatId']]=$rr['url'];
   }
-
-  $v=array(
-   'vid' => $vid,
-   'k' => $k);
-  $post=http_build_query($v);
-
-  $head=array('Accept: */*',
-   'Accept-Language: ro-RO,ro;q=0.8,en-US;q=0.6,en-GB;q=0.4,en;q=0.2',
-   'Accept-Encoding: deflate',
-   'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-   'X-Requested-With: XMLHttpRequest',
-   'Content-Length: '.strlen($post),
-   'Origin: https://yt1s.com',
-   'Connection: keep-alive',
-   'Referer: https://yt1s.com/en26');
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $l);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
-  curl_setopt($ch, CURLOPT_POST,1);
-  curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 25);
-  $h = curl_exec($ch);
-  curl_close($ch);
-  $x=json_decode($h,1);
-  if (isset($x['dlink']))
-   return $x['dlink'];
+  if (isset($s['37']))
+   $out=$s['37'];
+  elseif (isset($s['22']))
+   $out=$s['22'];
+  elseif (isset($s['18']))
+   $out=$s['18'];
   else
-   return "";
- } else
-  return "";
+   $out="";
+  return $out;
 }
+}
+$l="https://www.youtube.com/embed/zCjBWYbP_wQ";
+$link=youtube($l);
+echo $link."<BR><BR>";
+//or
+$link=youtube1($l);
+echo $link."<BR><BR>";
+
 ?>
